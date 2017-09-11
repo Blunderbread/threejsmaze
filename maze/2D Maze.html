@@ -33,12 +33,17 @@
 					unvisited[j][k]=1;
 				};
 			};
-			start = [Math.floor(Math.random()*x),Math.floor(Math.random()*y)];
-			var here = start;
+			astart = [Math.floor(Math.random()*x),Math.floor(Math.random()*y)];
+			al = [];
+			al.push(astart);
+			deadends = [];
+			deadends.push(astart);
+			var here = [astart[0],astart[1]];
 			unvisited[here[0]][here[1]]=0;
-			var path = [here];
+			var path = [];
+			path.push(here);
+			console.log(path);
 			var dead = 0;
-			deadends=[here];
 			while(n>0) {
 				var potential = [];
 				var neighbors = [];
@@ -61,15 +66,23 @@
 					};
 					path.push(next);
 					here = next;
+//					if(dead == 1) {al[al.length-1].push(here)};
 					dead = 0;
 				}
 				else {
-					here=path.pop();
-					if (dead == 0) {dead = 1; deadends.push(here)};
+					here = path.pop();
+					if (dead == 0) {
+						dead = 1;
+						al.push(here);
+						deadends.push(here)
+					};
+//					al[al.length-2].pop();
+//					al[al.length-1].push(here);
 				};
 			};
 			deadends.push(here);
-			if (deadends.length==1) {deadends.push(start)};
+			al.push(here);
+//			if (deadends.length==1) {deadends.push(astart)};
 			
 						
 			var pairs = [];
@@ -127,7 +140,6 @@
 				iterations--;
 			};
 			pgeom.position.set(-3.75*x+7.5*(fstart[0]+0.5),pgeom.position.y,-3.75*x+7.5*(fstart[1]+0.5+(x-y)/2));
-			//skybox.position.set(pgeom.position.x,pgeom.position.y,pgeom.position.z);
 			egeom.position.set(-3.75*x+7.5*(fend[0]+0.5),egeom.position.y,-3.75*x+7.5*(fend[1]+0.5+(x-y)/2));
 
 			pathway = []
@@ -177,9 +189,9 @@
 						end = [selection[0][0],selection[0][1]];
 						for (j=0;j<doorcount;j++) {
 							if (scene.getObjectByName("key"+j)) {
-								a = scene.getObjectByName("key"+j)
-								b = -3.75*x+7.5*(end[0]+0.5)
-								c = -3.75*x+7.5*(end[1]+0.5+(x-y)/2)
+								a = scene.getObjectByName("key"+j);
+								b = -3.75*x+7.5*(end[0]+0.5);
+								c = -3.75*x+7.5*(end[1]+0.5+(x-y)/2);
 								if (a.position.x.toFixed(2)==b.toFixed(2) && a.position.z.toFixed(2)==c.toFixed(2) && choptable.length>0) {
 									selection = choptable.splice(Math.floor(Math.random()*choptable.length),1)
 									end = [selection[0][0],selection[0][1]];
@@ -245,9 +257,6 @@
 
 					doorcolor = new THREE.Color;
 					doorcolor.setHSL(Math.random(),1,0.5);
-	//				a = rainbow.getHSL();
-	//				b = wallcolor.getHSL();
-	//				doorcolor.setHSL(((a.h + b.h)/2)+0.5,1,0.5);
 					demissive = doorcolor;
 					demissive.offsetHSL(0,0,-0.1);
 					
@@ -592,7 +601,6 @@
 			walls = new Array();
 			
 			pmat = new THREE.MeshLambertMaterial({opacity:0,color:(0xFF0000),transparent:true});
-//			pmat = new THREE.MeshLambertMaterial({opacity:1,color:(0xFF0000),transparent:true});
 			pgeom = new THREE.Mesh(new THREE.BoxGeometry(2.5,2,2.5),pmat);
 
 			duck = new THREE.Group();
@@ -893,8 +901,8 @@
 				if (a.parent.type=="Scene") {a.rotation.y += 0.03}
 			}
         };
-		x = Math.round(Math.random()*13+5);
-		y = Math.round(Math.random()*13+5);
+		x = Math.round(Math.random()*6+6);
+		y = Math.round(Math.random()*6+6);
 		var a = 0
 		if (x>y) {a=y; y=x; x=a;};
 		init();
