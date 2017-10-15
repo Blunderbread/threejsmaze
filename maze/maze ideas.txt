@@ -3,9 +3,14 @@ Interface/controls
 		Easy: Depth first search generation
 		Hard: True Prim's algorithm
 	Change controls after winning to be more conventional for a top down view
-	organic controls
+	organic controls (vs current discrete movements)
+	interaction with Scene objects
+	smaller timer font with total time below current floor time
+	keep keys in same hand (2 separate inventories)
 	
 Scenery/variation
+	surrounding mountains with Perlin noise
+	angled wall surfaces/objects that stick out from the walls (see Sector 2 base of Coded Arms)
 	big rooms (but not so big as to encompass the entire level)
 	archways
 	walls randomly rotate (collision unaffected)
@@ -23,48 +28,52 @@ Scenery/variation
 		fish? monoliths?
 
 collectibles
+	Key fragments that assemble
+		not necessarily key geometry
 	pellets (visit 50% of the space to open the door)
 	jellybeans - to prevent from getting lost (limited)
 	special objects to pass through areas (think chips challenge)
 	
-new mechanics
+Concepts for new mechanics
+	Keys that open up things other than doors
+		raise/lower a platform
+		switches that alternate accessibility to 2 or more segments of the maze
+		
+	Time limit per maze adjusted to number of floors descended
+		total time tracked, may function as score based on how long you can live
 	push block
 		at intersections or to fill a hole
 		open room puzzle?
-	Puzzle checkpoints
+	Puzzle room checkpoints, door locks behind
+		combination doorlock
+		ice floor slide puzzle
+		toggle floor tiles, light all the space (think Qbert)
+		moving walkway/one way door puzzle
 	stop utilizing every possible space, but increase the max length & width possible
-		either mark clusters of spaces to be impassable, or randomly select single spaces
+		either mark clusters of spaces to be scenery, or randomly select single spaces
 	eliminate right wall surfing
 		Braiding - eliminate random walls and recalculate maxpathlength
-		phase between 2 mazes
+		phase between 2 mazes - teleporters?
+			>3 dimensions with multiple views
 	level stacking (2D + completion sends you up a level in the stack)
 	island+connector mazes
 	flash solution path for a few seconds as a limited use tool
-	Maze reset after taking too long
+	Maze reset after taking too long (limited # of lives?)
 		pulse to indicate running out of time and blackout
 		max pathlength to deadends from current position, x nCr 1 instead of x nCr 2
-	Platforming
-		goes along with maze weaving
 	Red Herrings
-
-Big picture ideas
-	Escape from burning building
-		office building with windows, random textures, objects (blocking?)
-	Firefighter in burning building
-		timed, multi floor with stairs
-	Pyramid (1x1,3x3,5x5,... or 1x1,2x2,3x3...), descend on completion
-	Hide from hunters, temporary hiding spots, patrols, doors+keys
-	classic win98
-	
-	
+	Rotating room
+		gravity changes to allow pathfinding on walls/ceiling
+	Multiple floors
+		Platforming
+		Ramps, springs, trapdoors
+		pass above/below segments of the maze
 	Chip's Challenge
 		new array for floor tile types
 		new collision ray for floor tile
 			can't walk unless floor tile is solid (3D especially)
 			swap between ceiling and floor (gravity flip)
-	Mazes on sides of polygons
+	Mazes on polygonal surfaces
 		irregular arrays that have rule sets determining which point to wrap around once border is reached
-		[island and connector mazes]
-	circular maze in garden
-	platforming elements like moving floors to jump to
-	Vascular
+		[may work best with island and connector maze concept]
+	circular mazes
