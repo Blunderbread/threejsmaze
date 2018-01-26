@@ -173,9 +173,7 @@
 			wincolor.setHSL(Math.random(),0.5,0.5)
 			material = new THREE.MeshPhongMaterial({opacity:0.5,color:wincolor,emissive:wincolor,shininess:100});
 			for (var j=0;j<maxpath.length;j++){pathway.push(new THREE.Vector3(-3.75*x+7.5*(maxpath[j][0]+0.5),-3.75*x+7.5*(maxpath[j][1]+0.5+(x-y)/2),-3.75*x+7.5*(maxpath[j][2]+0.5+(x-z)/2)))};
-			route = new THREE.CatmullRomCurve3(pathway);
-			route.type = "catmullrom";
-			route.tension = 0
+			route = new THREE.CatmullRomCurve3(pathway,false,"catmullrom",0.01);
 			pathgeom = new THREE.TubeBufferGeometry(route,10*maxpath.length,0.5,12);
 			pathmesh = new THREE.Mesh(pathgeom,material);
 			
