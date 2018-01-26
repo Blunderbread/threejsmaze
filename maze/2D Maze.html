@@ -147,9 +147,7 @@
 			wincolor.setHSL(Math.random(),0.5,0.5)
 			material = new THREE.MeshPhongMaterial({opacity:0.5,color:wincolor,emissive:wincolor,shininess:100,transparent:true});
 			for (var j=0;j<maxpath.length;j++){pathway.push(new THREE.Vector3(-3.75*x+7.5*(maxpath[j][0]+0.5),pgeom.position.y,-3.75*x+7.5*(maxpath[j][1]+0.5+(x-y)/2)))};
-			route = new THREE.CatmullRomCurve3(pathway);
-			route.type = "catmullrom";
-			route.tension = 0
+			route = new THREE.CatmullRomCurve3(pathway,false,"catmullrom",0.01);
 			pathgeom = new THREE.TubeBufferGeometry(route,10*maxpath.length,0.5,12);
 			pathmesh = new THREE.Mesh(pathgeom,material);
 			
@@ -600,8 +598,21 @@
 			
 			walls = new Array();
 			
-			pmat = new THREE.MeshLambertMaterial({opacity:0,color:(0xFF0000),transparent:true});
-			pgeom = new THREE.Mesh(new THREE.BoxGeometry(2.5,2,2.5),pmat);
+			pgeom = new THREE.Group();
+			pmat = new THREE.MeshLambertMaterial({opacity:0,color:(0xFF0000),transparent:true,depthWrite: false, depthTest: false});
+			diskgeom = new THREE.CylinderGeometry(Math.sqrt(2.5),Math.sqrt(2.5),0.5,32);
+			arrowgeom = new THREE.ConeGeometry(Math.sqrt(2.5)/4,Math.sqrt(2.5)/2,3);
+			disk = new THREE.Mesh(diskgeom,pmat);
+			arrow = new THREE.Mesh(arrowgeom,pmat);
+			disk.position.set(0,0,0);
+			arrow.rotation.set(-Math.PI/2,0,Math.PI/2);
+			arrow.position.set(-Math.sqrt(2.5)/2,Math.sqrt(2.5)/8,0)
+			pgeom.add(disk);
+			pgeom.add(arrow);
+			
+//			pmat = new THREE.MeshLambertMaterial({opacity:0,color:(0xFF0000),transparent:true,depthWrite: false, depthTest: false});
+//			pgeom = new THREE.Mesh(new THREE.BoxGeometry(2.5,2,2.5),pmat);
+//			pgeom = new THREE.Mesh(new THREE.CylinderGeometry(Math.sqrt(2.5)/1,Math.sqrt(2.5)/1,0.5,32),pmat);
 
 			duck = new THREE.Group();
 			billmat = new THREE.MeshPhongMaterial({color:0xff6600,emissive:0xff6600,shininess:100,opacity:1,transparent:true});
@@ -851,7 +862,7 @@
 				}
 				if (pgeom.children[0].geometry)
 				{
-					pgeom.remove(pgeom.children[0]);
+					pgeom.remove(pgeom.children[2]);
 					scene.add(skybox);
 					skybox.position.set(0,10,0);
 				}
@@ -869,10 +880,13 @@
 			}
 			else {renderer.render(scene,camera)};
 			
-			if (Math.floor(pgeom.position.x.toFixed(2))==Math.floor(egeom.position.x.toFixed(2)) && Math.floor(pgeom.position.z.toFixed(2))==Math.floor(egeom.position.z.toFixed(2)) && win==false) {
+			if (Math.floor(pgeom.position.x.toFixed(2))==Math.floor(egeom.position.x.toFixed(2)) && Math.floor(pgeom.position.z.toFixed(2))==Math.floor(egeom.position.z.toFixed(2)) && win==false && moving==false) {
 				win = true;
 				scene.add(pathmesh);
-				pgeom.material.opacity=1;
+				for (i=0;i<pgeom.children.length;i++) {
+					try {pgeom.children[i].material.opacity = 1}
+					catch (err) {};
+				};
 				pgeom.position.set(-3.75*x+7.5*(fstart[0]+0.5),pgeom.position.y,-3.75*x+7.5*(fstart[1]+0.5+(x-y)/2));
 				skybox.position.set(0,10,0);
 				skybox.visible = true;
