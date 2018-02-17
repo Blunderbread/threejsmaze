@@ -1,0 +1,214 @@
+<!-- <!DOCTYPE html> -->
+<html>
+	<head>
+		<title>Wheel</title>
+		<script type="text/javascript" src="http:threejs.org/build/three.min.js"></script>
+		<script type="text/javascript" src="http:code.jquery.com/jquery-2.1.4.min.js"></script>
+		<style>
+		  body{margin: 0;overflow: hidden;}
+		</style>
+	</head>
+	<body bgcolor="#FFFFFF">
+		<div id="startButtonId"><button id="spin" class="button1">Spin</button></div>
+		<div id="startButtonId"><button id="reset" class="button2">Reset</button></div>
+		<style>
+			.button1 {
+			  display: inline-block;
+			  padding: 15px 25px;
+			  font-size: 24px;
+			  cursor: pointer;
+			  text-align: center;
+			  text-decoration: none;
+			  outline: none;
+			  color: #fff;
+			  background-color: #4CAF50;
+			  border: none;
+			  border-radius: 20px;
+			  box-shadow: 7px -4px #999;
+			  position: absolute;
+			  bottom: 40%;
+			  right: 46.5%;
+			}
+
+			.button1:hover {background-color: #3e8e41}
+
+			.button1:active {
+			  background-color: #3e8e41;
+			  box-shadow: 4px -3px #666;
+			  transform: translate(4px, -2px);
+			}
+			
+			.button2 {
+			  display: inline-block;
+			  padding: 15px 25px;
+			  font-size: 24px;
+			  cursor: pointer;
+			  text-align: center;
+			  text-decoration: none;
+			  outline: none;
+			  color: #fff;
+			  background-color: #4CAF50;
+			  border: none;
+			  border-radius: 20px;
+			  box-shadow: 7px -4px #999;
+			  position: absolute;
+			  bottom: 31%;
+			  right: 46.5%;
+			}
+
+			.button2:hover {background-color: #3e8e41}
+
+			.button2:active {
+			  background-color: #3e8e41;
+			  box-shadow: 4px -3px #666;
+			  transform: translate(4px, -2px);
+			}
+		</style>
+		<div id="WebGL-output"></div>
+		  <script type="text/javascript">
+			$(function(){ 	
+				window.addEventListener( 'resize', onWindowResize, false );
+				document.getElementById('spin').addEventListener('click', spinwheel);
+				document.getElementById('reset').addEventListener('click', resetwheel);
+				
+				String.prototype.toHHMMSS = function () {
+					var sec_num = parseInt(this, 10);
+					var hours   = Math.floor(sec_num / 3600000);
+					var minutes = Math.floor((sec_num - (hours * 3600000)) / 60000);
+					var seconds = (sec_num - (hours * 3600000) - (minutes * 60000))/1000;
+					if (hours   < 10) {hours   = "0"+hours;}
+					if (minutes < 10) {minutes = "0"+minutes;}
+					if (seconds < 10) {seconds = "0"+seconds;}
+					var time    = hours+':'+minutes+':'+seconds;
+					return time;
+				}
+				
+				function spinwheel() {
+					if (spinning==false) {
+						spinning = true;
+						masterwheel.rotation.x -= Math.random()*32.318+32.318/2;
+						spinvel = Math.random()*0.11+0.26
+						microvel = Math.random()*0.000025+0.000075;
+						microthr = Math.random()*0.01+0.015;
+//						console.clear();
+//						console.log("spin velocity ",spinvel);
+//						console.log("micro velocity ",microvel);
+//						console.log("micro threshold",microthr);
+						micro = false;
+						starttime = Date.now();
+//						calctime = (((spinvel-microthr)/0.0015)+ (microthr/microvel))/60;
+//						console.log("Calculated time: ",calctime);
+					}
+				};
+				
+				function resetwheel() {
+//				if slicecount==9,14,22... then there's a possibility for indistinguishable colors to be touching on the ends
+					if (spinvel==0) {
+						if (typeof masterwheel != "undefined") {
+							scene.remove(masterwheel);
+						}
+						offset = Math.random();
+						slcount = Math.floor(Math.random()*0+45);
+						sltheta = 2*Math.PI/slcount;
+						masterwheel = new THREE.Group();
+						for (i=0;i<slcount;i++) {
+							slh = (offset+(0.618033988749895*i))%1;
+							slicecolor = new THREE.Color
+							slicecolor.setHSL(slh,1,0.5);
+							slice = new THREE.Mesh(new THREE.CylinderGeometry(5,5,2,64/slcount,1,false,i*sltheta,sltheta), new THREE.MeshLambertMaterial({color:slicecolor,side:THREE.DoubleSide}));
+							slice.name = i.toString();
+							masterwheel.add(slice);
+						}
+						masterwheel.rotation.z += Math.PI/2;
+						masterwheel.rotation.x += Math.random()*50-50/2;
+						scene.add(masterwheel);
+					}
+				};
+				
+				function init() {
+					scene = new THREE.Scene();
+					camera = new THREE.PerspectiveCamera(40,16/9,1,100);
+					renderer = new THREE.WebGLRenderer({antialias:true});
+					renderer.setClearColor(0x000000, 1.0);
+					renderer.setSize(window.innerWidth, window.innerHeight);
+					scene.add(camera);
+					camera.position.set(-25,2.5,10);
+					light = new THREE.DirectionalLight(0xFFFFFF,1);
+					light2 = new THREE.DirectionalLight(0xFFFFFF,0.5);
+					light.position.set(-30,20,15);
+					light2.position.set(-30,-10,15);
+					light.lookAt({x:0,y:0,z:0});
+					light2.lookAt({x:0,y:0,z:0});
+					scene.add(light);
+					scene.add(light2);
+					camera.lookAt(5,-2,5);
+					spinvel = 0;
+					microvel = 0;
+					microthr = 0;
+					spinning=false;
+					resetwheel();
+					time = Date.now();
+					ptime = Date.now();
+					fps = 60;
+					frames = 0;
+					arshape = new THREE.Shape();
+					arshape.moveTo(0,0);
+					arshape.lineTo(0.75,0.75);
+					arshape.lineTo(0.75,0.25);
+					arshape.lineTo(2,0.25);
+					arshape.lineTo(2,-0.25);
+					arshape.lineTo(0.75,-0.25);
+					arshape.lineTo(0.75,-0.75);
+					arshape.lineTo(0,0);
+					var extset = {steps:1,amount:2,bevelEnabled:false};
+					arrow = new THREE.Mesh(new THREE.ExtrudeGeometry(arshape,extset),new THREE.MeshLambertMaterial({color:0xFFFFFF}));
+					arrow.rotation.y -= Math.PI/2;
+					arrow.position.set(1,0,5);
+					scene.add(arrow);
+					vec = new THREE.Vector3(0,0,-1);
+					sray = new THREE.Raycaster(arrow.position,vec,0,2);
+					ctest = new Array();
+				};
+				
+				function onWindowResize(){
+					camera.updateProjectionMatrix();
+					renderer.setSize(window.innerWidth,window.innerHeight);
+				}		
+
+				function sliceout(){
+					selection = scene.getObjectByName(lastseen);
+					masterwheel.remove(selection);
+				};
+				
+				function renderScene() {
+					requestAnimationFrame(renderScene);
+					renderer.render(scene,camera);
+					masterwheel.rotation.x += spinvel;
+					time = Date.now();
+					ftime=1000/(time-ptime)
+					ptime=Date.now();
+					scene.updateMatrixWorld();
+					ctest = sray.intersectObject(masterwheel,true);
+					if (spinning==true && ctest.length>0) {
+						lastseen = ctest[0].object.name;
+//						console.log(ctest[0].object.name);
+					}
+					if (spinvel>microthr) {spinvel -= 0.0015*60/ftime}
+					else if (spinvel>0) {
+						spinvel -= microvel*60/ftime;
+//						if (micro!=true) {console.log("Microspin engaged"); micro=true;}
+					}
+					else if (spinvel<=0 && spinning==true) {
+						spinning = false;
+						spinvel = 0;
+						spintime = (Date.now()-starttime).toString().toHHMMSS();
+						sliceout();
+					};
+				}
+				init();
+				$("#WebGL-output").append(renderer.domElement);
+				renderScene();
+			});
+		</script>
+	</body>
+</html>
