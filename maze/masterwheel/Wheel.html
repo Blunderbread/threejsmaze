@@ -9,67 +9,100 @@
 		</style>
 	</head>
 	<body bgcolor="#FFFFFF">
-		<div id="startButtonId"><button id="spin" class="button1">Spin</button></div>
-		<div id="startButtonId"><button id="reset" class="button2">Reset</button></div>
+		<div id="heart0" class="heart heart0"><img draggable="false" src="https://raw.githubusercontent.com/Blunderbread/threejsmaze/master/maze/masterwheel/full2.png"></img></div>
+		<div id="heart1" class="heart heart1"><img draggable="false" src="https://raw.githubusercontent.com/Blunderbread/threejsmaze/master/maze/masterwheel/full2.png"></img></div>
+		<div id="heart2" class="heart heart2"><img draggable="false" src="https://raw.githubusercontent.com/Blunderbread/threejsmaze/master/maze/masterwheel/full2.png"></img></div>
+		<div id="heart3" class="heart heart3"><img draggable="false" src="https://raw.githubusercontent.com/Blunderbread/threejsmaze/master/maze/masterwheel/full2.png"></img></div>
+		<div id="heart4" class="heart heart4"><img draggable="false" src="https://raw.githubusercontent.com/Blunderbread/threejsmaze/master/maze/masterwheel/full2.png"></img></div>
+		<div id="heart5" class="heart heart5"><img draggable="false" src="https://raw.githubusercontent.com/Blunderbread/threejsmaze/master/maze/masterwheel/empty2.png"></img></div>
+		<div id="startButtonId"><button id="spin" class="button button1">Spin</button></div>
+		<div id="startButtonId"><button id="reset" class="button button2">Reset</button></div>
 		<style>
-			.button1 {
-			  display: inline-block;
-			  padding: 15px 25px;
-			  font-size: 24px;
-			  cursor: pointer;
-			  text-align: center;
-			  text-decoration: none;
-			  outline: none;
-			  color: #fff;
-			  background-color: #4CAF50;
-			  border: none;
-			  border-radius: 20px;
-			  box-shadow: 7px -4px #999;
-			  position: absolute;
-			  bottom: 40%;
-			  right: 46.5%;
+			* {
+				 user-select: none;
+				-khtml-user-select: none;
+				-o-user-select: none;
+				-moz-user-select: -moz-none;
+				-webkit-user-select: none;
 			}
 
-			.button1:hover {background-color: #3e8e41}
+			::selection { background: transparent;color:inherit; }
+			::-moz-selection { background: transparent;color:inherit; }
+			
+			img {
+				z-index: 1;
+			}
+			.heart {
+				position:absolute;
+				top: 5px;
+			}
+			.heart0 {
+				left: 5px;
+			}
+			.heart1 {
+				left: 135px;
+			}
+			.heart2 {
+				left: 265px;
+			}
+			.heart3 {
+				left: 395px;
+			}
+			.heart4 {
+				left: 525px;
+			}
+			.heart5 {
+				left: 655px;
+			}
+			.button {
+				display: inline-block;
+				padding: 20px 15px;
+				font-size: 24px;
+				cursor: pointer;
+				text-align: center;
+				text-decoration: none;
+				outline: none;
+				color: #fff;
+				background-color: #4CAF50;
+				border: none;
+				border-radius: 50%;
+				box-shadow: 7px -4px #999;
+				position: absolute;
+				z-index: 1;
+			}
+			.button:hover {background-color: #3e8e41}
 
-			.button1:active {
+			.button:active {
 			  background-color: #3e8e41;
 			  box-shadow: 4px -3px #666;
 			  transform: translate(4px, -2px);
 			}
 			
+			.button1 {
+				padding: 20px 15px;
+				top: 41%;
+				left: 29%;
+			}
+
 			.button2 {
-			  display: inline-block;
-			  padding: 15px 25px;
-			  font-size: 24px;
-			  cursor: pointer;
-			  text-align: center;
-			  text-decoration: none;
-			  outline: none;
-			  color: #fff;
-			  background-color: #4CAF50;
-			  border: none;
-			  border-radius: 20px;
-			  box-shadow: 7px -4px #999;
-			  position: absolute;
-			  bottom: 31%;
-			  right: 46.5%;
+				bottom: 20%;
+				left: 29%;
 			}
-
-			.button2:hover {background-color: #3e8e41}
-
-			.button2:active {
-			  background-color: #3e8e41;
-			  box-shadow: 4px -3px #666;
-			  transform: translate(4px, -2px);
+			
+			.threejs {
+				position: absolute;
+				top: 0px;
+				left: 0px;
+				z-index: -1;
 			}
+			
 		</style>
-		<div id="WebGL-output"></div>
+		<div id="WebGL-output" class="threejs"></div>
 		  <script type="text/javascript">
 			$(function(){ 	
 				window.addEventListener( 'resize', onWindowResize, false );
 				document.getElementById('spin').addEventListener('click', spinwheel);
-				document.getElementById('reset').addEventListener('click', resetwheel);
+				document.getElementById('reset').addEventListener('click', hardreset);
 				
 				String.prototype.toHHMMSS = function () {
 					var sec_num = parseInt(this, 10);
@@ -86,41 +119,41 @@
 				function spinwheel() {
 					if (spinning==false) {
 						spinning = true;
+						document.getElementById("spin").style.visibility = "hidden";
+						document.getElementById("reset").style.visibility = "hidden";
 						masterwheel.rotation.x -= Math.random()*32.318+32.318/2;
 						spinvel = Math.random()*0.11+0.26
 						microvel = Math.random()*0.000025+0.000075;
 						microthr = Math.random()*0.01+0.015;
-//						console.clear();
-//						console.log("spin velocity ",spinvel);
-//						console.log("micro velocity ",microvel);
-//						console.log("micro threshold",microthr);
 						micro = false;
 						starttime = Date.now();
-//						calctime = (((spinvel-microthr)/0.0015)+ (microthr/microvel))/60;
-//						console.log("Calculated time: ",calctime);
 					}
 				};
 				
-				function resetwheel() {
-//				if slicecount==9,14,22... then there's a possibility for indistinguishable colors to be touching on the ends
+				function resetwheel(aminew=true,colorlist,mxrotation) {
 					if (spinvel==0) {
+						if (aminew==true || aminew.type=="click") {
+							window.offset = Math.random(); 
+							window.slcount = masterlist.length;
+						};
 						if (typeof masterwheel != "undefined") {
 							scene.remove(masterwheel);
 						}
-						offset = Math.random();
-						slcount = Math.floor(Math.random()*0+45);
-						sltheta = 2*Math.PI/slcount;
+						sltheta = 2*Math.PI/window.slcount;
 						masterwheel = new THREE.Group();
-						for (i=0;i<slcount;i++) {
-							slh = (offset+(0.618033988749895*i))%1;
+						for (i=0;i<window.slcount;i++) {
+							slh = (window.offset+(0.618033988749895*i))%1;
 							slicecolor = new THREE.Color
-							slicecolor.setHSL(slh,1,0.5);
-							slice = new THREE.Mesh(new THREE.CylinderGeometry(5,5,2,64/slcount,1,false,i*sltheta,sltheta), new THREE.MeshLambertMaterial({color:slicecolor,side:THREE.DoubleSide}));
+							if (aminew==false) {slicecolor = colorlist[i]}
+							else {slicecolor.setHSL(slh,1,0.5)};
+							slice = new THREE.Mesh(new THREE.CylinderGeometry(5,5,2,Math.max(Math.round(64/window.slcount),2),1,false,i*sltheta,sltheta), new THREE.MeshLambertMaterial({color:slicecolor}));
 							slice.name = i.toString();
+							slice.cc = slicecolor;
 							masterwheel.add(slice);
 						}
 						masterwheel.rotation.z += Math.PI/2;
-						masterwheel.rotation.x += Math.random()*50-50/2;
+						if (aminew==true || aminew.type=="click") {masterwheel.rotation.x += Math.random()*50-50/2}
+						else {masterwheel.rotation.x = mxrotation};
 						scene.add(masterwheel);
 					}
 				};
@@ -132,7 +165,7 @@
 					renderer.setClearColor(0x000000, 1.0);
 					renderer.setSize(window.innerWidth, window.innerHeight);
 					scene.add(camera);
-					camera.position.set(-25,2.5,10);
+					camera.position.set(-25,4,10);
 					light = new THREE.DirectionalLight(0xFFFFFF,1);
 					light2 = new THREE.DirectionalLight(0xFFFFFF,0.5);
 					light.position.set(-30,20,15);
@@ -146,7 +179,20 @@
 					microvel = 0;
 					microthr = 0;
 					spinning=false;
-					resetwheel();
+					masterlist = [
+						"Ayy lmao",
+						"Reggie Fils",
+						"Curse of the Bard",
+						"Inn of the Giggling Donkey",
+						"Donkey Kong",
+						"Beavers 100% bothered",
+						"4th wall breaking: proof of concept",
+						"Pls donate - Jimmy Wales",
+						"More Cowbell",
+						"by Shel Silverstein",
+						"RIP sleep schedule",
+					];
+					hardreset();
 					time = Date.now();
 					ptime = Date.now();
 					fps = 60;
@@ -167,19 +213,83 @@
 					scene.add(arrow);
 					vec = new THREE.Vector3(0,0,-1);
 					sray = new THREE.Raycaster(arrow.position,vec,0,2);
-					ctest = new Array();
+					ctest = [];
 				};
 				
 				function onWindowResize(){
+					var width = window.innerWidth;
+					var height = window.innerHeight;
+					camera.aspect = width / height;
 					camera.updateProjectionMatrix();
 					renderer.setSize(window.innerWidth,window.innerHeight);
-				}		
+				};
+				
+				function wordsetup(aminew=true) {
+					if (aminew==false || aminew.type=="click") {
+						for (i=0;i<scrolling.length;i++) {
+							scene.remove(scrolling[i])
+						};
+					};
+					scrolling = [];
+					var loader = new THREE.FontLoader();
+					loader.load( 'https://raw.githubusercontent.com/Blunderbread/threejsmaze/master/maze/masterwheel/helvetiker_regular.typeface.json', function (font) {
+						for (i=0;i<currlist.length;i++) {
+							var wordgeom = new THREE.TextGeometry(currlist[i], {
+								font: font,
+								size: 0.5,
+								height: 0.5,
+								curveSegments: 6
+							} );
+							word = new THREE.Mesh(wordgeom,new THREE.MeshLambertMaterial({color:masterwheel.children[i].material.color}))
+							word.position.set(-1,5-i,7.5);
+							word.rotation.y -= Math.PI/2;
+							word.cc = masterwheel.children[i].material.color;
+							word.name = i.toString()+"w";
+							scrolling.push(word);
+							scene.add(word);
+						}
+					} );
+				}
+				
+				function wordswap() {
+//					unshift(scrolling[i]), pop(),
+//					window.wordcounter++;
+//					if (window.wordcounter>=masterlist.length) {
+//						window.wordcounter = 0;
+//					}
+				}
 
 				function sliceout(){
 					selection = scene.getObjectByName(lastseen);
 					masterwheel.remove(selection);
+					window.slcount--;
+					colorlist = [];
+					for (i=0;i<masterwheel.children.length;i++) {
+						colorlist.push(masterwheel.children[i].material.color);
+					}
+					currlist.splice(parseInt(lastseen),1);
+					wordsetup(false);
+					resetwheel(false,colorlist,masterwheel.rotation.x);
+				};
+					
+				function listmaker() {
+					//Fisher-Yates shuffle
+					currlist = masterlist.slice();
+					var m = currlist.length, t, i;
+					while (m) {
+						i = Math.floor(Math.random() * m--);
+						t = currlist[m];
+						currlist[m] = currlist[i];
+						currlist[i] = t;
+					}
 				};
 				
+				function hardreset(aminew=true) {
+					listmaker();
+					wordsetup(aminew);
+					resetwheel(aminew);
+				};
+					
 				function renderScene() {
 					requestAnimationFrame(renderScene);
 					renderer.render(scene,camera);
@@ -191,20 +301,35 @@
 					ctest = sray.intersectObject(masterwheel,true);
 					if (spinning==true && ctest.length>0) {
 						lastseen = ctest[0].object.name;
-//						console.log(ctest[0].object.name);
+						try {
+							if (pastseen != lastseen) {
+								a = scene.getObjectByName(pastseen);
+								b = scene.getObjectByName(lastseen);
+								a.material.color = a.cc;
+								b.material.color = new THREE.Color(1,1,1);
+								for (i=0;i<scrolling.length;i++) {
+									if (scrolling[i].name==(pastseen+"w")) {scrolling[i].material.color=scrolling[i].cc};
+									if (scrolling[i].name==(lastseen+"w")) {scrolling[i].material.color=new THREE.Color(1,1,1)};
+								}
+							}
+						}
+						catch (e) {};
+						pastseen = lastseen;
 					}
 					if (spinvel>microthr) {spinvel -= 0.0015*60/ftime}
 					else if (spinvel>0) {
 						spinvel -= microvel*60/ftime;
-//						if (micro!=true) {console.log("Microspin engaged"); micro=true;}
 					}
 					else if (spinvel<=0 && spinning==true) {
 						spinning = false;
 						spinvel = 0;
+						document.getElementById("spin").style.visibility = "visible";
+						document.getElementById("reset").style.visibility = "visible";
+						if (currlist.length>2) {sliceout()}
+						else {hardreset()};
 						spintime = (Date.now()-starttime).toString().toHHMMSS();
-						sliceout();
-					};
-				}
+					}
+				};
 				init();
 				$("#WebGL-output").append(renderer.domElement);
 				renderScene();
