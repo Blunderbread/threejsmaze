@@ -161,6 +161,7 @@
 				function init() {
 					scene = new THREE.Scene();
 					camera = new THREE.PerspectiveCamera(40,16/9,1,100);
+					camera.aspect = window.innerWidth/window.innerHeight;
 					renderer = new THREE.WebGLRenderer({antialias:true});
 					renderer.setClearColor(0x000000, 1.0);
 					renderer.setSize(window.innerWidth, window.innerHeight);
@@ -226,9 +227,12 @@
 				
 				function wordsetup(aminew=true) {
 					if (aminew==false || aminew.type=="click") {
-						for (i=0;i<scrolling.length;i++) {
-							scene.remove(scrolling[i])
-						};
+						try {
+							for (i=0;i<scrolling.length;i++) {
+								scene.remove(scrolling[i])
+							};
+						}
+						catch(e) {};
 					};
 					scrolling = [];
 					var loader = new THREE.FontLoader();
@@ -284,10 +288,10 @@
 					}
 				};
 				
-				function hardreset(aminew=true) {
+				function hardreset(aminewresetwheel=true,aminewresetwords=false) {
 					listmaker();
-					wordsetup(aminew);
-					resetwheel(aminew);
+					wordsetup(aminewresetwords);
+					resetwheel(aminewresetwheel);
 				};
 					
 				function renderScene() {
