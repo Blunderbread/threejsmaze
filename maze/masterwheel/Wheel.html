@@ -9,12 +9,12 @@
 		</style>
 	</head>
 	<body bgcolor="#000000">
-		<div id="heart0" class="heart heart0"><img draggable="false" src="https://raw.githubusercontent.com/Blunderbread/threejsmaze/master/maze/masterwheel/full2.png"></img></div>
-		<div id="heart1" class="heart heart1"><img draggable="false" src="https://raw.githubusercontent.com/Blunderbread/threejsmaze/master/maze/masterwheel/full2.png"></img></div>
-		<div id="heart2" class="heart heart2"><img draggable="false" src="https://raw.githubusercontent.com/Blunderbread/threejsmaze/master/maze/masterwheel/full2.png"></img></div>
-		<div id="heart3" class="heart heart3"><img draggable="false" src="https://raw.githubusercontent.com/Blunderbread/threejsmaze/master/maze/masterwheel/full2.png"></img></div>
-		<div id="heart4" class="heart heart4"><img draggable="false" src="https://raw.githubusercontent.com/Blunderbread/threejsmaze/master/maze/masterwheel/full2.png"></img></div>
-		<div id="heart5" class="heart heart5"><img draggable="false" src="https://raw.githubusercontent.com/Blunderbread/threejsmaze/master/maze/masterwheel/empty2.png"></img></div>
+		<div id="heart0" class="heart heart0"></div>
+		<div id="heart1" class="heart heart1"></div>
+		<div id="heart2" class="heart heart2"></div>
+		<div id="heart3" class="heart heart3"></div>
+		<div id="heart4" class="heart heart4"></div>
+		<div id="heart5" class="heart heart5"></div>
 		<div id="startButtonId"><button id="spin" class="button button1">Spin</button></div>
 		<div id="startButtonId"><button id="reset" class="button button2">Reset</button></div>
 		<style>
@@ -25,10 +25,8 @@
 				-moz-user-select: -moz-none;
 				-webkit-user-select: none;
 			}
-
 			::selection { background: transparent;color:inherit; }
 			::-moz-selection { background: transparent;color:inherit; }
-			
 			img {
 				z-index: 1;
 			}
@@ -70,32 +68,32 @@
 				position: absolute;
 				z-index: 1;
 			}
-			.button:hover {background-color: #3e8e41}
-
+			.button:hover {
+				background-color: #3e8e41
+			}
 			.button:active {
 			  background-color: #3e8e41;
 			  box-shadow: 4px -3px #666;
 			  transform: translate(4px, -2px);
 			}
-			
 			.button1 {
+				background-color: #000000;
 				padding: 20px 15px;
 				top: 41%;
 				left: 29%;
 			}
-
+			.button1:hover {background-color: #333333}
+			.button1:active {background-color: #FFFFFF}
 			.button2 {
 				bottom: 20%;
 				left: 29%;
 			}
-			
 			.threejs {
 				position: absolute;
 				top: 0px;
 				left: 0px;
 				z-index: -1;
-			}
-			
+			}	
 		</style>
 		<div id="WebGL-output" class="threejs"></div>
 		  <script type="text/javascript">
@@ -151,10 +149,12 @@
 							slice.cc = slicecolor;
 							masterwheel.add(slice);
 						}
-						masterwheel.rotation.z += Math.PI/2;
+						masterwheel.rotation.z -= Math.PI/2;
 						if (aminew==true || aminew.type=="click") {masterwheel.rotation.x += Math.random()*50-50/2}
 						else {masterwheel.rotation.x = mxrotation};
 						scene.add(masterwheel);
+						lastseen = "0";
+						pastseen = "0";
 					}
 				};
 				
@@ -193,6 +193,9 @@
 						"RIP sleep schedule",
 					];
 					hardreset();
+					health = 2;
+					maxhealth = 2;
+					adjhealth();
 					time = Date.now();
 					ptime = Date.now();
 					fps = 60;
@@ -214,6 +217,8 @@
 					vec = new THREE.Vector3(0,0,-1);
 					sray = new THREE.Raycaster(arrow.position,vec,0,2);
 					ctest = [];
+					pastseen = "0";
+					lastseen = "0";
 				};
 				
 				function onWindowResize(){
@@ -223,16 +228,31 @@
 					renderer.setSize(window.innerWidth,window.innerHeight);
 				};
 				
+				function adjhealth(amount=0) {
+					health -= amount;
+					if (health>maxhealth) {health=maxhealth};
+					if (health<0) {health=0};
+					if (maxhealth<1) {maxhealth=1};
+					for (i=(5-health);i>-1;i--) {
+						document.getElementById("heart"+(5-i).toString()).innerHTML = "<img draggable='false' src='https://raw.githubusercontent.com/Blunderbread/threejsmaze/master/maze/masterwheel/empty2.png'></img>";
+					}
+					for (i=(5);i>(5-health);i--) {
+						document.getElementById("heart"+(5-i).toString()).innerHTML = "<img draggable='false' src='https://raw.githubusercontent.com/Blunderbread/threejsmaze/master/maze/masterwheel/full2.png'></img>";
+					}
+					for (i=(5-maxhealth);i>-1;i--) {document.getElementById("heart"+(5-i).toString()).innerHTML = ""}
+				};
+				
 				function wordsetup(aminew=true) {
 					if (aminew==false || aminew.type=="click") {
 						try {
-							for (i=0;i<scrolling.length;i++) {
-								scene.remove(scrolling[i])
+							for (i=0;i<scrollist.length;i++) {
+								scene.remove(scrollist[i])
 							};
 						}
 						catch(e) {};
 					};
-					scrolling = [];
+					wma = [];
+					scrollist = [];
 					var loader = new THREE.FontLoader();
 					loader.load( 'https://raw.githubusercontent.com/Blunderbread/threejsmaze/master/maze/masterwheel/helvetiker_regular.typeface.json', function (font) {
 						for (i=0;i<currlist.length;i++) {
@@ -242,24 +262,35 @@
 								height: 0.5,
 								curveSegments: 6
 							} );
-							word = new THREE.Mesh(wordgeom,new THREE.MeshLambertMaterial({color:masterwheel.children[i].material.color}))
-							word.position.set(-1,5-i,7.5);
-							word.rotation.y -= Math.PI/2;
-							word.cc = masterwheel.children[i].material.color;
-							word.name = i.toString()+"w";
-							scrolling.push(word);
-							scene.add(word);
+							wma.push(wordgeom);
 						}
-					} );
+						for (i=0;i<11;i++) {
+							word = new THREE.Mesh(wma[i%wma.length],new THREE.MeshLambertMaterial({color:masterwheel.children[i%masterwheel.children.length].material.color}));
+							word.rotation.y -= Math.PI/2;
+							word.cc = masterwheel.children[i%masterwheel.children.length].cc;
+							word.name = (i%masterwheel.children.length).toString()+"w";
+							scrollist.push(word);
+							word.position.set(-1,5-i,7.5);
+							scene.add(word);
+						};
+					});
 				}
 				
 				function wordswap() {
-//					unshift(scrolling[i]), pop(),
-//					window.wordcounter++;
-//					if (window.wordcounter>=masterlist.length) {
-//						window.wordcounter = 0;
-//					}
-				}
+					while (scrollist[scrollist.length-1].position.y<-6) {
+						scene.remove(scrollist[scrollist.length-1]);
+						scrollist.pop();
+						a = parseInt(scrollist[0].name.slice(0,scrollist[0].name.length-1))-1
+						if (a<0) {a+=wma.length};
+						word = new THREE.Mesh(wma[a],new THREE.MeshLambertMaterial({color:masterwheel.children[a].material.color}));
+						word.rotation.y -= Math.PI/2;
+						word.cc = masterwheel.children[a].cc;
+						word.name = a.toString()+"w";
+						word.position.set(-1,1+scrollist[0].position.y,7.5);
+						scene.add(word);
+						scrollist.unshift(word);
+					};
+				};
 
 				function sliceout(){
 					selection = scene.getObjectByName(lastseen);
@@ -288,41 +319,45 @@
 				
 				function hardreset(aminewresetwheel=true,aminewresetwords=false) {
 					listmaker();
-					wordsetup(aminewresetwords);
 					resetwheel(aminewresetwheel);
+					wordsetup(aminewresetwords);
 				};
 					
 				function renderScene() {
 					requestAnimationFrame(renderScene);
 					renderer.render(scene,camera);
 					masterwheel.rotation.x += spinvel;
+					for (i=0;i<scrollist.length;i++) {
+						scrollist[i].position.y -= (masterwheel.children.length/(2*Math.PI))*spinvel*(60/ftime);
+					}
 					time = Date.now();
 					ftime=1000/(time-ptime)
 					ptime=Date.now();
+					if (spinning==true) {
+						if (scrollist[scrollist.length-1].position.y<-6) {wordswap()};
+					};
 					scene.updateMatrixWorld();
 					ctest = sray.intersectObject(masterwheel,true);
 					if (spinning==true && ctest.length>0) {
-						lastseen = ctest[0].object.name;
-						try {
-							if (pastseen != lastseen) {
-								a = scene.getObjectByName(pastseen);
-								b = scene.getObjectByName(lastseen);
-								a.material.color = a.cc;
-								b.material.color = new THREE.Color(1,1,1);
-								for (i=0;i<scrolling.length;i++) {
-									if (scrolling[i].name==(pastseen+"w")) {scrolling[i].material.color=scrolling[i].cc};
-									if (scrolling[i].name==(lastseen+"w")) {scrolling[i].material.color=new THREE.Color(1,1,1)};
-								}
+						if (typeof ctest[0].object.name != "undefined") {lastseen = ctest[0].object.name};
+						if (pastseen != lastseen) {
+							a = scene.getObjectByName(pastseen);
+							b = scene.getObjectByName(lastseen);
+							a.material.color = a.cc;
+							b.material.color = new THREE.Color(1,1,1);
+							for (i=0;i<scrollist.length;i++) {
+								if (scrollist[i].name==(pastseen+"w")) {scrollist[i].material.color=scrollist[i].cc};
+								if (scrollist[i].name==(lastseen+"w")) {scrollist[i].material.color=new THREE.Color(1,1,1)};
 							}
 						}
-						catch (e) {};
 						pastseen = lastseen;
 					}
 					if (spinvel>microthr) {spinvel -= 0.0015*60/ftime}
 					else if (spinvel>0) {
-						spinvel -= microvel*60/ftime;
-					}
-					else if (spinvel<=0 && spinning==true) {
+						spinvel -= microvel*60/ftime}
+//						spinvel = 0.01;
+					;
+					if (spinvel<=0 && spinning==true) {
 						spinning = false;
 						spinvel = 0;
 						document.getElementById("spin").style.visibility = "visible";
@@ -330,8 +365,9 @@
 						if (currlist.length>2) {sliceout()}
 						else {hardreset()};
 						spintime = (Date.now()-starttime).toString().toHHMMSS();
-					}
+					};
 				};
+				
 				init();
 				$("#WebGL-output").append(renderer.domElement);
 				renderScene();
