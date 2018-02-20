@@ -15,8 +15,10 @@
 		<div id="heart3" class="heart heart3"></div>
 		<div id="heart4" class="heart heart4"></div>
 		<div id="heart5" class="heart heart5"></div>
+		<div id="modal" class="modal" style="display: none;"><header class="modalheader"><h2>Modal Title</h2><div id="modalcontent"><p>This is the modal content.</p></div></header></div>
 		<div id="startButtonId"><button id="spin" class="button button1">Spin</button></div>
 		<div id="startButtonId"><button id="reset" class="button button2">Reset</button></div>
+		<div id="modaltestdiv"><button id="modaltestbtn" class="button modaltestbtn" onclick="document.getElementById('modal').style.display='block'">Modal Test</button></div>
 		<style>
 			* {
 				 user-select: none;
@@ -27,6 +29,18 @@
 			}
 			::selection { background: transparent;color:inherit; }
 			::-moz-selection { background: transparent;color:inherit; }
+			h2 {
+				font-family: "Segoe UI",Arial,sans-serif;
+				font-weight: 400;
+				margin: 10px 0;
+				font-size: 30px;
+				color: white;
+			}
+			p {
+				font-family: Verdana,sans-serif;
+				font-size: 15px;
+				color: white;
+			}
 			img {
 				z-index: 1;
 			}
@@ -88,6 +102,17 @@
 				bottom: 20%;
 				left: 29%;
 			}
+			.modaltestbtn {
+				bottom: 10%;
+				left: 50%;
+			}
+			.modal {
+				position: absolute;
+				bottom: 50px;
+				left: 50px;
+				padding: 20px;
+				background-color: grey;
+			}
 			.threejs {
 				position: absolute;
 				top: 0px;
@@ -101,6 +126,12 @@
 				window.addEventListener( 'resize', onWindowResize, false );
 				document.getElementById('spin').addEventListener('click', spinwheel);
 				document.getElementById('reset').addEventListener('click', hardreset);
+				var modal = document.getElementById('modal');
+				window.onclick = function(event) {
+					if (event.target != document.getElementById('modaltestbtn')) {
+						modal.style.display = "none";
+					}
+				}
 				
 				String.prototype.toHHMMSS = function () {
 					var sec_num = parseInt(this, 10);
@@ -191,6 +222,18 @@
 						"More Cowbell",
 						"by Shel Silverstein",
 						"RIP sleep schedule",
+						"anime was a mistake",
+						"CASH ME OUSSIDE",
+						"mike pence is race bannon",
+						"here come dat boi",
+						"o shit waddup",
+						"bush did harambe",
+						"120 stars isn't worth it",
+						"jabroni",
+						"seinfeld is my favorite anime",
+						"how to disappoint your parents",
+						"pikachu is my favorite digimon",
+						"I am actually out of ideas.",
 					];
 					hardreset();
 					health = 2;
@@ -219,6 +262,11 @@
 					ctest = [];
 					pastseen = "0";
 					lastseen = "0";
+					blackbox1 = new THREE.Mesh(new THREE.BoxGeometry(2,2,13),new THREE.MeshBasicMaterial({color:0x000000}));
+					blackbox2 = new THREE.Mesh(new THREE.BoxGeometry(2,2,13),new THREE.MeshBasicMaterial({color:0x000000}));
+					blackbox1.position.set(-1,6,13.5);
+					blackbox2.position.set(-1,-6,13.5);
+					scene.add(blackbox1,blackbox2);
 				};
 				
 				function onWindowResize(){
@@ -277,7 +325,7 @@
 				}
 				
 				function wordswap() {
-					while (scrollist[scrollist.length-1].position.y<-6) {
+					while (scrollist[scrollist.length-1].position.y<-5.5) {
 						scene.remove(scrollist[scrollist.length-1]);
 						scrollist.pop();
 						a = parseInt(scrollist[0].name.slice(0,scrollist[0].name.length-1))-1
@@ -290,6 +338,19 @@
 						scene.add(word);
 						scrollist.unshift(word);
 					};
+//					while (scrollist[scrollist.length-1].position.y<-6) {
+//						scene.remove(scrollist[scrollist.length-1]);
+//						scrollist.pop();
+//						a = parseInt(scrollist[0].name.slice(0,scrollist[0].name.length-1))-1
+//						if (a<0) {a+=wma.length};
+//						word = new THREE.Mesh(wma[a],new THREE.MeshLambertMaterial({color:masterwheel.children[a].material.color}));
+//						word.rotation.y -= Math.PI/2;
+//						word.cc = masterwheel.children[a].cc;
+//						word.name = a.toString()+"w";
+//						word.position.set(-1,1+scrollist[0].position.y,7.5);
+//						scene.add(word);
+//						scrollist.unshift(word);
+//					};
 				};
 
 				function sliceout(){
@@ -334,7 +395,7 @@
 					ftime=1000/(time-ptime)
 					ptime=Date.now();
 					if (spinning==true) {
-						if (scrollist[scrollist.length-1].position.y<-6) {wordswap()};
+						if (scrollist[scrollist.length-1].position.y<-5.5) {wordswap()};
 					};
 					scene.updateMatrixWorld();
 					ctest = sray.intersectObject(masterwheel,true);
