@@ -15,10 +15,10 @@
 		<div id="heart3" class="heart heart3"></div>
 		<div id="heart4" class="heart heart4"></div>
 		<div id="heart5" class="heart heart5"></div>
-		<div id="modal" class="modal" style="display: none;"><header class="modalheader"><h2>Modal Title</h2><div id="modalcontent"><p>This is the modal content.</p></div></header></div>
+		<div id="modal" class="modal" style="display: none; background-image: url('https://raw.githubusercontent.com/Blunderbread/threejsmaze/master/maze/masterwheel/geometric.jpg')"><header class="modalheader"><h2 id="title"></h2><div id="modalcontent"><p id="description"></p><p>Click anywhere to continue...</p></div></header></div>
 		<div id="startButtonId"><button id="spin" class="button button1">Spin</button></div>
 		<div id="startButtonId"><button id="reset" class="button button2">Reset</button></div>
-		<div id="modaltestdiv"><button id="modaltestbtn" class="button modaltestbtn" onclick="document.getElementById('modal').style.display='block'">Modal Test</button></div>
+		<div id="modaltestdiv"><button id="modaltestbtn" class="button modaltestbtn">Show Last Spin</button></div>
 		<style>
 			* {
 				 user-select: none;
@@ -37,7 +37,7 @@
 				color: white;
 			}
 			p {
-				font-family: Verdana,sans-serif;
+				font-family: Arial,sans-serif;
 				font-size: 15px;
 				color: white;
 			}
@@ -99,16 +99,17 @@
 			.button1:hover {background-color: #333333}
 			.button1:active {background-color: #FFFFFF}
 			.button2 {
-				bottom: 20%;
-				left: 29%;
+				bottom: 5%;
+				right: 5%;
 			}
 			.modaltestbtn {
-				bottom: 10%;
-				left: 50%;
+				bottom: 60px;
+				left: 65px;
 			}
 			.modal {
+				filter: hue-rotate(90deg);
 				position: absolute;
-				bottom: 50px;
+				bottom: -200px;
 				left: 50px;
 				padding: 20px;
 				background-color: grey;
@@ -126,12 +127,49 @@
 				window.addEventListener( 'resize', onWindowResize, false );
 				document.getElementById('spin').addEventListener('click', spinwheel);
 				document.getElementById('reset').addEventListener('click', hardreset);
+				document.getElementById('modaltestbtn').addEventListener('click', modalin);
 				var modal = document.getElementById('modal');
+				var mtb = document.getElementById('modaltestbtn');
+				var mmov = false;
 				window.onclick = function(event) {
-					if (event.target != document.getElementById('modaltestbtn')) {
-						modal.style.display = "none";
+					if ((mmov==false) && (modal.style.display == "block") && (event.target != document.getElementById('modaltestbtn'))) {
+						mmov = true;
+						var pos = 50;
+						var id = setInterval(frame, 5);
+						function frame() {
+							if (pos <= -200) {
+								clearInterval(id);
+								mmov = false;
+								modal.style.bottom = -200+'px';
+								modal.style.display = "none"
+								if(spinning==false) {mtb.style.visibility = 'visible'};
+							} else {
+								pos-=4; 
+								modal.style.bottom = pos + 'px';
+							}
+						}
 					}
 				}
+				
+				function modalin() {
+					if (mmov == false) {
+						mmov = true;
+						modal.style.display = "block";
+						mtb.style.visibility = 'hidden';
+						var pos = -200;
+						var id = setInterval(frame, 5);
+						function frame() {
+							if (pos >= 50) {
+								modal.style.bottom = 50+'px';
+								clearInterval(id);
+								mmov = false;
+							} else {
+								pos+=4; 
+								modal.style.bottom = pos + 'px';
+							}
+						}
+					}
+				};
 				
 				String.prototype.toHHMMSS = function () {
 					var sec_num = parseInt(this, 10);
@@ -150,6 +188,7 @@
 						spinning = true;
 						document.getElementById("spin").style.visibility = "hidden";
 						document.getElementById("reset").style.visibility = "hidden";
+						document.getElementById("modaltestbtn").style.visibility = "hidden";
 						masterwheel.rotation.x -= Math.random()*32.318+32.318/2;
 						spinvel = Math.random()*0.11+0.26
 						microvel = Math.random()*0.000025+0.000075;
@@ -239,10 +278,6 @@
 					health = 2;
 					maxhealth = 2;
 					adjhealth();
-					time = Date.now();
-					ptime = Date.now();
-					fps = 60;
-					frames = 0;
 					arshape = new THREE.Shape();
 					arshape.moveTo(0,0);
 					arshape.lineTo(0.75,0.75);
@@ -267,6 +302,8 @@
 					blackbox1.position.set(-1,6,13.5);
 					blackbox2.position.set(-1,-6,13.5);
 					scene.add(blackbox1,blackbox2);
+					fps = new THREE.Clock();
+					fps.start();
 				};
 				
 				function onWindowResize(){
@@ -312,6 +349,7 @@
 							} );
 							wma.push(wordgeom);
 						}
+						rotsetup = masterwheel.rotation.x
 						for (i=0;i<11;i++) {
 							word = new THREE.Mesh(wma[i%wma.length],new THREE.MeshLambertMaterial({color:masterwheel.children[i%masterwheel.children.length].material.color}));
 							word.rotation.y -= Math.PI/2;
@@ -341,16 +379,25 @@
 				};
 
 				function sliceout(){
+					document.getElementById("title").innerHTML = currlist[parseInt(lastseen)];
 					selection = scene.getObjectByName(lastseen);
-					masterwheel.remove(selection);
-					window.slcount--;
-					colorlist = [];
-					for (i=0;i<masterwheel.children.length;i++) {
-						colorlist.push(masterwheel.children[i].material.color);
+					csel = (selection.cc.getHSL().h*360)-106;
+					modal.style.filter = "hue-rotate("+csel+"deg)";
+					modalin();
+					setTimeout(subroutine, 2000);
+					function subroutine() {
+						document.getElementById("spin").style.visibility = "visible";
+						document.getElementById("reset").style.visibility = "visible";
+						masterwheel.remove(selection);
+						window.slcount--;
+						colorlist = [];
+						for (i=0;i<masterwheel.children.length;i++) {
+							colorlist.push(masterwheel.children[i].material.color);
+						}
+						currlist.splice(parseInt(lastseen),1);
+						wordsetup(false);
+						resetwheel(false,colorlist,masterwheel.rotation.x);
 					}
-					currlist.splice(parseInt(lastseen),1);
-					wordsetup(false);
-					resetwheel(false,colorlist,masterwheel.rotation.x);
 				};
 					
 				function listmaker() {
@@ -374,13 +421,11 @@
 				function renderScene() {
 					requestAnimationFrame(renderScene);
 					renderer.render(scene,camera);
-					masterwheel.rotation.x += spinvel;
+					deltfr = fps.getDelta();
+					masterwheel.rotation.x += (spinvel*60*deltfr);
 					for (i=0;i<scrollist.length;i++) {
-						scrollist[i].position.y -= (masterwheel.children.length/(2*Math.PI))*spinvel*(60/ftime);
+						scrollist[i].position.y -= (masterwheel.children.length/(2*Math.PI))*spinvel*60*deltfr;
 					}
-					time = Date.now();
-					ftime=1000/(time-ptime)
-					ptime=Date.now();
 					if (spinning==true) {
 						if (scrollist[scrollist.length-1].position.y<-5.5) {wordswap()};
 					};
@@ -396,22 +441,26 @@
 							for (i=0;i<scrollist.length;i++) {
 								if (scrollist[i].name==(pastseen+"w")) {scrollist[i].material.color=scrollist[i].cc};
 								if (scrollist[i].name==(lastseen+"w")) {scrollist[i].material.color=new THREE.Color(1,1,1)};
-							}
-						}
+							};
+						};
 						pastseen = lastseen;
-					}
-					if (spinvel>microthr) {spinvel -= 0.0015*60/ftime}
+					};
+					if (spinvel>microthr) {spinvel -= 0.0015*60*deltfr}
 					else if (spinvel>0) {
-						spinvel -= microvel*60/ftime}
-//						spinvel = 0.01;
+						spinvel -= microvel*60*deltfr}
 					;
 					if (spinvel<=0 && spinning==true) {
 						spinning = false;
 						spinvel = 0;
-						document.getElementById("spin").style.visibility = "visible";
-						document.getElementById("reset").style.visibility = "visible";
 						if (currlist.length>2) {sliceout()}
-						else {hardreset()};
+						else {
+							document.getElementById("title").innerHTML = currlist[parseInt(lastseen)];
+							selection = scene.getObjectByName(lastseen);
+							csel = (selection.cc.getHSL().h*360)-106;
+							modal.style.filter = "hue-rotate("+csel+"deg)";
+							modalin();
+							hardreset()
+						}
 						spintime = (Date.now()-starttime).toString().toHHMMSS();
 					};
 				};
