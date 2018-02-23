@@ -15,10 +15,9 @@
 		<div id="heart3" class="heart heart3"></div>
 		<div id="heart4" class="heart heart4"></div>
 		<div id="heart5" class="heart heart5"></div>
-		<div id="modal" class="modal" style="display: none; background-image: url('https://raw.githubusercontent.com/Blunderbread/threejsmaze/master/maze/masterwheel/geometric.jpg')"><header class="modalheader"><h2 id="title"></h2><div id="modalcontent"><p id="description"></p><p>Click anywhere to continue...</p></div></header></div>
+		<div id="modal" class="modal" style="display: none; background-image: url('https://raw.githubusercontent.com/Blunderbread/threejsmaze/master/maze/masterwheel/textures/geometric.jpg')"><header class="modalheader"><h2 id="title"></h2><div id="modalcontent"><p id="description"></p></div></header></div>
 		<div id="startButtonId"><button id="spin" class="button button1">Spin</button></div>
 		<div id="startButtonId"><button id="reset" class="button button2">Reset</button></div>
-		<div id="modaltestdiv"><button id="modaltestbtn" class="button modaltestbtn">Show Last Spin</button></div>
 		<style>
 			* {
 				 user-select: none;
@@ -102,11 +101,12 @@
 				bottom: 5%;
 				right: 5%;
 			}
-			.modaltestbtn {
-				bottom: 60px;
-				left: 65px;
+			.modalheader {
+				text-shadow: -1px 0 black, 0 1px black, 1px 0 black, 0 -1px black;
 			}
 			.modal {
+				border-radius: 5px;
+				background-size: cover;
 				filter: hue-rotate(90deg);
 				position: absolute;
 				bottom: -200px;
@@ -127,46 +127,34 @@
 				window.addEventListener( 'resize', onWindowResize, false );
 				document.getElementById('spin').addEventListener('click', spinwheel);
 				document.getElementById('reset').addEventListener('click', hardreset);
-				document.getElementById('modaltestbtn').addEventListener('click', modalin);
 				var modal = document.getElementById('modal');
-				var mtb = document.getElementById('modaltestbtn');
-				var mmov = false;
-				window.onclick = function(event) {
-					if ((mmov==false) && (modal.style.display == "block") && (event.target != document.getElementById('modaltestbtn'))) {
-						mmov = true;
-						var pos = 50;
-						var id = setInterval(frame, 5);
-						function frame() {
-							if (pos <= -200) {
-								clearInterval(id);
-								mmov = false;
-								modal.style.bottom = -200+'px';
-								modal.style.display = "none"
-								if(spinning==false) {mtb.style.visibility = 'visible'};
-							} else {
-								pos-=4; 
-								modal.style.bottom = pos + 'px';
-							}
+				
+				function modalout() {
+					var pos = 50;
+					var id = setInterval(frame, 5);
+					function frame() {
+						if (pos <= -200) {
+							clearInterval(id);
+							modal.style.bottom = -200+'px';
+							modal.style.display = "none"
+						} else {
+							pos-=4; 
+							modal.style.bottom = pos + 'px';
 						}
 					}
 				}
 				
 				function modalin() {
-					if (mmov == false) {
-						mmov = true;
-						modal.style.display = "block";
-						mtb.style.visibility = 'hidden';
-						var pos = -200;
-						var id = setInterval(frame, 5);
-						function frame() {
-							if (pos >= 50) {
-								modal.style.bottom = 50+'px';
-								clearInterval(id);
-								mmov = false;
-							} else {
-								pos+=4; 
-								modal.style.bottom = pos + 'px';
-							}
+					modal.style.display = "block";
+					var pos = -200;
+					var id = setInterval(frame, 5);
+					function frame() {
+						if (pos >= 50) {
+							modal.style.bottom = 50+'px';
+							clearInterval(id);
+						} else {
+							pos+=4; 
+							modal.style.bottom = pos + 'px';
 						}
 					}
 				};
@@ -186,10 +174,11 @@
 				function spinwheel() {
 					if (spinning==false) {
 						spinning = true;
+						modalout();
 						document.getElementById("spin").style.visibility = "hidden";
 						document.getElementById("reset").style.visibility = "hidden";
-						document.getElementById("modaltestbtn").style.visibility = "hidden";
-						masterwheel.rotation.x -= Math.random()*32.318+32.318/2;
+						masterwheel.rotation.x = Math.random()*2*Math.PI;
+						wordalign();
 						spinvel = Math.random()*0.11+0.26
 						microvel = Math.random()*0.000025+0.000075;
 						microthr = Math.random()*0.01+0.015;
@@ -202,19 +191,19 @@
 					if (spinvel==0) {
 						if (aminew==true || aminew.type=="click") {
 							window.offset = Math.random(); 
-							window.slcount = masterlist.length;
+							slcount = currlist.length;
 						};
 						if (typeof masterwheel != "undefined") {
 							scene.remove(masterwheel);
 						}
-						sltheta = 2*Math.PI/window.slcount;
+						sltheta = 2*Math.PI/slcount;
 						masterwheel = new THREE.Group();
-						for (i=0;i<window.slcount;i++) {
+						for (i=0;i<slcount;i++) {
 							slh = (window.offset+(0.618033988749895*i))%1;
 							slicecolor = new THREE.Color
 							if (aminew==false) {slicecolor = colorlist[i]}
 							else {slicecolor.setHSL(slh,1,0.5)};
-							slice = new THREE.Mesh(new THREE.CylinderGeometry(5,5,2,Math.max(Math.round(64/window.slcount),2),1,false,i*sltheta,sltheta), new THREE.MeshLambertMaterial({color:slicecolor}));
+							slice = new THREE.Mesh(new THREE.CylinderGeometry(5,5,2,Math.max(Math.round(64/slcount),2),1,false,i*sltheta,sltheta), new THREE.MeshLambertMaterial({color:slicecolor}));
 							slice.name = i.toString();
 							slice.cc = slicecolor;
 							masterwheel.add(slice);
@@ -249,31 +238,128 @@
 					microvel = 0;
 					microthr = 0;
 					spinning=false;
-					masterlist = [
-						"Ayy lmao",
-						"Reggie Fils",
+					slcount = 0;
+//					masterlist = [
+//						"Ayy lmao",
+//						"Reggie Fils",
+//						"Curse of the Bard",
+//						"Inn of the Giggling Donkey",
+//						"Donkey Kong",
+//						"Beavers 100% bothered",
+//						"4th wall breaking: proof of concept",
+//						"Pls donate - Jimmy Wales",
+//						"More Cowbell",
+//						"by Shel Silverstein",
+//						"RIP sleep schedule",
+//						"anime was a mistake",
+//						"CASH ME OUSSIDE",
+//						"mike pence is race bannon",
+//						"here come dat boi",
+//						"o shit waddup",
+//						"bush did harambe",
+//						"120 stars isn't worth it",
+//						"jabroni",
+//						"seinfeld is my favorite anime",
+//						"how to disappoint your parents",
+//						"pikachu is my favorite digimon",
+//						"I am actually out of ideas.",
+//					];
+					masterlist = [];
+					currlist = [];
+					gamelist = [
+							"Battleblock Theater",
+							"Borderlands 2",
+							"Castle Crashers",
+							"Distance",
+							"Grand Theft Auto V",
+							"Monaco",
+							"Portal 2",
+							"Town of Salem",
+							"Transformice",
+							"Flash Games",
+							"Rocket League",
+							"Risk of Rain",
+							"Cuphead",
+							"Stick Fight: The Game",
+							"Binding of Isaac: Rebirth",
+							"Gang Beasts",
+							"Hidden Folks",
+							"Hotline Miami 1",
+							"Hotline Miami 2",
+							"Refunct",
+							"Rogue Legacy",
+							"Sonic Mania",
+							"Spelunky",
+							"Surgeon Simulator",
+							"Windosill",
+							"Hexcells infinite",
+					]
+					rifts = [
+						"Madman's Rift",
+						"Bard's Rift",
+						"Playwright's Rift",
+						"Jester's Rift",
+						"Time Traveler's Rift",
+						"Rift of the Giggling Donkey",
+					]
+					curses = [
+						"Curse of the Sodden",
 						"Curse of the Bard",
-						"Inn of the Giggling Donkey",
-						"Donkey Kong",
-						"Beavers 100% bothered",
-						"4th wall breaking: proof of concept",
-						"Pls donate - Jimmy Wales",
-						"More Cowbell",
-						"by Shel Silverstein",
-						"RIP sleep schedule",
-						"anime was a mistake",
-						"CASH ME OUSSIDE",
-						"mike pence is race bannon",
-						"here come dat boi",
-						"o shit waddup",
-						"bush did harambe",
-						"120 stars isn't worth it",
-						"jabroni",
-						"seinfeld is my favorite anime",
-						"how to disappoint your parents",
-						"pikachu is my favorite digimon",
-						"I am actually out of ideas.",
-					];
+						"Curse of the Moon",
+						"Curse of the Choosing Beggar",
+						"Curse of the Twins",
+						"Curse of the Warrior",
+					]
+					hexes = [
+						"Hex of the Bulldog",
+						"Hex of the White Cat",
+						"Hex of the Rooster",
+						"Hex of the Dodo",
+						"Hex of the Mole",
+						"Hex of the Honey Badger",
+						"Hex of the Falcon",
+						"Hex of the Goldfish",
+					]
+					blessings = [
+						"Blessing of the Shaman",
+						"Blessing of the Seraph",
+						"Blessing of the Peasant",
+						"Blessing of the Apothecary",
+					]
+					gambits = [
+						"Gambit of the Wise",
+						"Gambit of the Fool",
+						"Gambit of the Deft",
+					]
+					descriptions = [
+						["Madman's Rift","Finish your drink."],
+						["Bard's Rift","Play one song. Cycle begins next spin."],
+						["Playwright's Rift","Choose a TV show and agree upon 3 rules to drink. Select the episode randomly."],
+						["Jester's Rift","Watch 10 minutes of the meme playlist. Starting point is random."],
+						["Time Traveler's Rift","Reset the wheel and all hexes/curses/blessings. Heart containers persist."],
+						["Rift of the Giggling Donkey","Watch a random videogamedunkey video."],
+						["Curse of the Sodden","Current drink is now water. Double if on water round."],
+						["Curse of the Bard","Play one song on an endless loop for the next cycle. You cannot mute it. Curse ends when drink ends."],
+						["Curse of the Moon","Can't end on a winning streak, can't end on a loss."],
+						["Curse of the Choosing Beggar","This is a wild card for curses."],
+						["Curse of the Twins","Two drinks must be finished by the end of the cycle."],
+						["Curse of the Warrior","Drink if any player dies or loses a round. Does not end when drink ends."],
+						["Hex of the Bulldog","-1 heart container (to a minimum of 1)"],
+						["Hex of the White Cat","Mute everything except discord."],
+						["Hex of the Rooster","Satisfy 3 goals (or fewer if less than 3 heart containers). Each failure results in health loss."],
+						["Hex of the Dodo","Purposely die 10 times or lose 3 rounds repeatedly. If you win or cannot complete this, a random curse is applied and this hex persists to the next cycle."],
+						["Hex of the Mole","You cannot see one button, and cannot use it."],
+						["Hex of the Honey Badger","You must play an arcade-style game for 10 minutes and reach some minimum score threshold. Failure results in a random curse."],
+						["Hex of the Falcon","Cycle interval decreases by 10 minutes to a minimum of 30 minutes."],
+						["Hex of the Goldfish","Spin a wheel containing only games. Play 1 round of each game for a total of 3 rounds."],
+						["Blessing of the Shaman","+1 heart container, curses cured."],
+						["Blessing of the Seraph","Immune from curses/hexes for 60 minutes.  Cannot be removed."],
+						["Blessing of the Peasant","A wild card for use when bored. Does not extend the cycle."],
+						["Blessing of the Apothecary","A potion that cures all curses now or can be saved to cure a curse later."],
+						["Gambit of the Wise","Play a quiz from sporcle. 100% score prevents hexes and curses 1 time. >50th percentile, receive a blessing.  Otherwise sustain a curse."],
+						["Gambit of the Fool","Play a 10 minute game for score, speed, or some other goal. Win for a blessing, lose for a curse."],
+						["Gambit of the Deft","Finish a game or level in a certain amount of time for a Blessing of the Peasant.  You get one try."],
+					]
 					hardreset();
 					health = 2;
 					maxhealth = 2;
@@ -304,6 +390,8 @@
 					scene.add(blackbox1,blackbox2);
 					fps = new THREE.Clock();
 					fps.start();
+					imprefix = "url('https://raw.githubusercontent.com/Blunderbread/threejsmaze/master/maze/masterwheel/textures/"
+					imsuffix = [["blur.jpg')",341],["caution.jpg')",44],["cross.jpg')",208],["dots.jpg')",43],["honeycomb.jpg')",35],["parallel.jpg')",194],["ribbons.jpg')",],["rug.jpg')",287],["geometric.jpg')",106],["space.jpg')",202],["drops.jpg')",84],["ribbons.jpg')",13],["speckled.jpg')",221],["tiles.jpg')",328],["waves.jpg')",219]];
 				};
 				
 				function onWindowResize(){
@@ -359,14 +447,30 @@
 							word.position.set(-1,5-i,7.5);
 							scene.add(word);
 						};
+						wordalign();
 					});
+				}
+				
+				function wordalign() {
+					while ((masterwheel.rotation.x>(Math.PI*2)) || (masterwheel.rotation.x<0)) {
+						if (masterwheel.rotation.x>(Math.PI*2)) {masterwheel.rotation.x-=(Math.PI*2)}
+						else {masterwheel.rotation.x+=(Math.PI*2)};
+					}
+					csli = parseInt(scrollist[5].name.slice(0,scrollist[5].name.length-1))+scrollist[5].position.y+0.5;
+					esli = -1*((masterwheel.rotation.x/(2*Math.PI)*masterwheel.children.length)-masterwheel.children.length);
+					if (csli<esli) {csli+=masterwheel.children.length};
+					slo = csli-esli;
+					for (i=0;i<scrollist.length;i++) {
+						scrollist[i].position.y -= slo;
+					}
+					wordswap();
 				}
 				
 				function wordswap() {
 					while (scrollist[scrollist.length-1].position.y<-5.5) {
 						scene.remove(scrollist[scrollist.length-1]);
 						scrollist.pop();
-						a = parseInt(scrollist[0].name.slice(0,scrollist[0].name.length-1))-1
+						a = parseInt(scrollist[0].name.slice(0,scrollist[0].name.length-1))-1;
 						if (a<0) {a+=wma.length};
 						word = new THREE.Mesh(wma[a],new THREE.MeshLambertMaterial({color:masterwheel.children[a].material.color}));
 						word.rotation.y -= Math.PI/2;
@@ -378,18 +482,27 @@
 					};
 				};
 
-				function sliceout(){
-					document.getElementById("title").innerHTML = currlist[parseInt(lastseen)];
-					selection = scene.getObjectByName(lastseen);
-					csel = (selection.cc.getHSL().h*360)-106;
+				function imgpicker() {
+					imsel = imsuffix[Math.floor(Math.random()*imsuffix.length)];
+					modal.style.backgroundImage = imprefix+imsel[0];
+					csel = Math.round((selection.cc.getHSL().h*360)-imsel[1]);
 					modal.style.filter = "hue-rotate("+csel+"deg)";
 					modalin();
+				}
+				
+				function sliceout(){
+					document.getElementById("title").innerHTML = currlist[parseInt(lastseen)];
+					for (i=0;i<descriptions.length;i++) {
+						if (descriptions[i][0]==currlist[parseInt(lastseen)]) {document.getElementById("description").innerHTML = descriptions[i][1];}
+					};
+					selection = scene.getObjectByName(lastseen);
+					imgpicker();
 					setTimeout(subroutine, 2000);
 					function subroutine() {
 						document.getElementById("spin").style.visibility = "visible";
 						document.getElementById("reset").style.visibility = "visible";
 						masterwheel.remove(selection);
-						window.slcount--;
+						slcount--;
 						colorlist = [];
 						for (i=0;i<masterwheel.children.length;i++) {
 							colorlist.push(masterwheel.children[i].material.color);
@@ -400,19 +513,40 @@
 					}
 				};
 					
-				function listmaker() {
-					//Fisher-Yates shuffle
-					currlist = masterlist.slice();
-					var m = currlist.length, t, i;
+				function fisheryates(list) {
+					var m = list.length, t, i;
 					while (m) {
 						i = Math.floor(Math.random() * m--);
-						t = currlist[m];
-						currlist[m] = currlist[i];
-						currlist[i] = t;
+						t = list[m];
+						list[m] = list[i];
+						list[i] = t;
 					}
+					return list;
+				}
+				
+				function listmaker() {
+					masterlist=[];
+					currlist=[];
+					for (i=0;i<3;i++) {
+						masterlist = masterlist.concat(gamelist);
+					}
+					masterlist = fisheryates(masterlist)
+					groupings = Math.floor(masterlist.length/5);
+					for (j=0;j<groupings;j++) {
+						currlist.push(masterlist[0+5*j]+" / "+masterlist[1+5*j]+" / "+masterlist[2+5*j]);
+						currlist.push(masterlist[3+5*j]+" / "+masterlist[4+5*j]);
+					}
+					i=0;
+					for (k=5*j;k<masterlist.length;k++) {
+						currlist[1+(2*i)]+=" / "+masterlist[k];
+						i++;
+					}
+					currlist = fisheryates(currlist);
 				};
 				
 				function hardreset(aminewresetwheel=true,aminewresetwords=false) {
+//					modalout();
+					document.getElementById("spin").style.visibility = "visible";
 					listmaker();
 					resetwheel(aminewresetwheel);
 					wordsetup(aminewresetwords);
@@ -427,7 +561,7 @@
 						scrollist[i].position.y -= (masterwheel.children.length/(2*Math.PI))*spinvel*60*deltfr;
 					}
 					if (spinning==true) {
-						if (scrollist[scrollist.length-1].position.y<-5.5) {wordswap()};
+						if ((scrollist[scrollist.length-1].position.y<-5.5) || (scrollist[0].position.y>5.5)) {wordswap()};
 					};
 					scene.updateMatrixWorld();
 					ctest = sray.intersectObject(masterwheel,true);
@@ -455,11 +589,14 @@
 						if (currlist.length>2) {sliceout()}
 						else {
 							document.getElementById("title").innerHTML = currlist[parseInt(lastseen)];
+							for (i=0;i<descriptions.length;i++) {
+								if (descriptions[i][0]==currlist[parseInt(lastseen)]) {document.getElementById("description").innerHTML = descriptions[i][1];}
+							};
 							selection = scene.getObjectByName(lastseen);
 							csel = (selection.cc.getHSL().h*360)-106;
 							modal.style.filter = "hue-rotate("+csel+"deg)";
 							modalin();
-							hardreset()
+							hardreset();
 						}
 						spintime = (Date.now()-starttime).toString().toHHMMSS();
 					};
