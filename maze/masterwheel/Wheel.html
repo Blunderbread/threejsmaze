@@ -267,32 +267,26 @@
 					masterlist = [];
 					currlist = [];
 					gamelist = [
-							"Battleblock Theater",
-							"Borderlands 2",
-							"Castle Crashers",
-							"Distance",
-							"Grand Theft Auto V",
-							"Monaco",
-							"Portal 2",
-							"Town of Salem",
-							"Transformice",
-							"Flash Games",
-							"Rocket League",
-							"Risk of Rain",
-							"Cuphead",
-							"Stick Fight: The Game",
-							"Binding of Isaac: Rebirth",
-							"Gang Beasts",
-							"Hidden Folks",
-							"Hotline Miami 1",
-							"Hotline Miami 2",
-							"Refunct",
-							"Rogue Legacy",
-							"Sonic Mania",
-							"Spelunky",
-							"Surgeon Simulator",
-							"Windosill",
-							"Hexcells infinite",
+						"Battleblock Theater",
+						"Borderlands 2",
+						"Castle Crashers",
+						"Dark Souls 2",
+						"Dark Souls 3",
+						"Distance",
+						"Emulator Games",
+						"Flash Games",
+						"GTA V",
+						"Monaco",
+						"Minecraft",
+						"Overwatch",
+						"Portal 2",
+						"Super Mario 64 online",
+						"Sporcle",
+						"Team Fortress 2",
+						"Town of Salem",
+						"Transformice",
+						"Rocket League",
+						"Trackmania Nations",
 					]
 					rifts = [
 						"Madman's Rift",
@@ -332,6 +326,7 @@
 						"Gambit of the Deft",
 					]
 					descriptions = [
+						["Flash games","The first flash game of the day must be Doeo."],
 						["Madman's Rift","Finish your drink."],
 						["Bard's Rift","Play one song. Cycle begins next spin."],
 						["Playwright's Rift","Choose a TV show and agree upon 3 rules to drink. Select the episode randomly."],
@@ -391,7 +386,7 @@
 					fps = new THREE.Clock();
 					fps.start();
 					imprefix = "url('https://raw.githubusercontent.com/Blunderbread/threejsmaze/master/maze/masterwheel/textures/"
-					imsuffix = [["blur.jpg')",341],["caution.jpg')",44],["cross.jpg')",208],["dots.jpg')",43],["honeycomb.jpg')",35],["parallel.jpg')",194],["ribbons.jpg')",],["rug.jpg')",287],["geometric.jpg')",106],["space.jpg')",202],["drops.jpg')",84],["ribbons.jpg')",13],["speckled.jpg')",221],["tiles.jpg')",328],["waves.jpg')",219]];
+					imsuffix = [["blur.jpg')",341],["caution.jpg')",44],["dots.jpg')",43],["honeycomb.jpg')",35],["parallel.jpg')",194],["rug.jpg')",287],["geometric.jpg')",106],["space.jpg')",202],["drops.jpg')",84],["ribbons.jpg')",13],["tiles.jpg')",328],["waves.jpg')",219]];
 				};
 				
 				function onWindowResize(){
@@ -447,6 +442,7 @@
 							word.position.set(-1,5-i,7.5);
 							scene.add(word);
 						};
+						document.getElementById("spin").style.visibility = "visible";
 						wordalign();
 					});
 				}
@@ -493,7 +489,8 @@
 				function sliceout(){
 					document.getElementById("title").innerHTML = currlist[parseInt(lastseen)];
 					for (i=0;i<descriptions.length;i++) {
-						if (descriptions[i][0]==currlist[parseInt(lastseen)]) {document.getElementById("description").innerHTML = descriptions[i][1];}
+						if (descriptions[i][0]==currlist[parseInt(lastseen)]) {document.getElementById("description").innerHTML = descriptions[i][1]}
+						else {document.getElementById("description").innerHTML = ""};
 					};
 					selection = scene.getObjectByName(lastseen);
 					imgpicker();
@@ -527,26 +524,54 @@
 				function listmaker() {
 					masterlist=[];
 					currlist=[];
-					for (i=0;i<3;i++) {
-						masterlist = masterlist.concat(gamelist);
-					}
+					for (i=0;i<3;i++) {masterlist = masterlist.concat(gamelist)};
 					masterlist = fisheryates(masterlist)
 					groupings = Math.floor(masterlist.length/5);
 					for (j=0;j<groupings;j++) {
-						currlist.push(masterlist[0+5*j]+" / "+masterlist[1+5*j]+" / "+masterlist[2+5*j]);
-						currlist.push(masterlist[3+5*j]+" / "+masterlist[4+5*j]);
+						if ((masterlist[0+5*j]==masterlist[1+5*j])&& (masterlist[0+5*j]==masterlist[2+5*j])) {currlist.push(masterlist[3+5*j])}
+						else if (masterlist[0+5*j]==masterlist[1+5*j]) {currlist.push(masterlist[0+5*j])}
+						else if (masterlist[1+5*j]==masterlist[2+5*j]) {currlist.push(masterlist[1+5*j])}
+						else if (masterlist[0+5*j]==masterlist[2+5*j]) {currlist.push(masterlist[0+5*j])}
+						else {currlist.push(masterlist[0+5*j]+" / "+masterlist[1+5*j]+" / "+masterlist[2+5*j])};
+						if (masterlist[3+5*j]==masterlist[4+5*j]) {currlist.push(masterlist[3+5*j])}
+						else {currlist.push(masterlist[3+5*j]+" / "+masterlist[4+5*j])};
 					}
 					i=0;
 					for (k=5*j;k<masterlist.length;k++) {
 						currlist[1+(2*i)]+=" / "+masterlist[k];
 						i++;
 					}
+					for (i=0;i<2;i++) {masterlist = currlist.concat(rifts)};
+					for (i=0;i<2;i++) {masterlist = currlist.concat(gambits)};
+					for (i=0;i<2;i++) {masterlist = currlist.concat(blessings)};
+					for (i=0;i<1;i++) {masterlist = currlist.push(curses[1])};
+					for (i=0;i<4;i++) {masterlist = currlist.push(hexes[6])};
+					currlist = currlist.concat(curses);
+					currlist = currlist.concat(hexes);
+					more = Math.floor(Math.random()*5+5);
+					for (i=0;i<more;i++) {
+						switch (Math.round(Math.random()*4)) {
+							case 0:
+								masterlist = currlist.push(rifts[Math.floor(Math.random()*rifts.length)]);
+								break;
+							case 1:
+								masterlist = currlist.push(gambits[Math.floor(Math.random()*gambits.length)]);
+								break;
+							case 2:
+								masterlist = currlist.push(blessings[Math.floor(Math.random()*blessings.length)]);
+								break;
+							case 3:
+								masterlist = currlist.push(curses[Math.floor(Math.random()*curses.length)]);
+								break;
+							case 4:
+								masterlist = currlist.push(hexes[Math.floor(Math.random()*hexes.length)]);
+						};
+					};
 					currlist = fisheryates(currlist);
 				};
 				
 				function hardreset(aminewresetwheel=true,aminewresetwords=false) {
-//					modalout();
-					document.getElementById("spin").style.visibility = "visible";
+					document.getElementById("spin").style.visibility = "hidden";
 					listmaker();
 					resetwheel(aminewresetwheel);
 					wordsetup(aminewresetwords);
@@ -590,7 +615,8 @@
 						else {
 							document.getElementById("title").innerHTML = currlist[parseInt(lastseen)];
 							for (i=0;i<descriptions.length;i++) {
-								if (descriptions[i][0]==currlist[parseInt(lastseen)]) {document.getElementById("description").innerHTML = descriptions[i][1];}
+								if (descriptions[i][0]==currlist[parseInt(lastseen)]) {document.getElementById("description").innerHTML = descriptions[i][1]}
+								else {document.getElementById("description").innerHTML = ""};
 							};
 							selection = scene.getObjectByName(lastseen);
 							csel = (selection.cc.getHSL().h*360)-106;
