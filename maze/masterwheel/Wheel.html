@@ -588,9 +588,10 @@
 					for (k=5*j;k<masterlist.length;k++) {
 						currlist.push(masterlist[k]);
 					};
-					for (i=0;i<1;i++) {masterlist = currlist.concat(rifts)};
+					for (i=0;i<2;i++) {masterlist = currlist.concat(rifts)};
 					for (i=0;i<1;i++) {masterlist = currlist.concat(gambits)};
 					for (i=0;i<1;i++) {masterlist = currlist.concat(blessings)};
+					for (i=0;i<4;i++) {currlist.push(hexes[4])};
 					currlist = currlist.concat(curses);
 					currlist = currlist.concat(hexes);
 					more = Math.floor(Math.random()*5+5);
