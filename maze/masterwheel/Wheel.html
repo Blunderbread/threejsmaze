@@ -15,7 +15,7 @@
 		<div id="heart3" class="heart heart3"></div>
 		<div id="heart4" class="heart heart4"></div>
 		<div id="heart5" class="heart heart5"></div>
-		<div id="modal" class="modal" style="display: none; background-image: url('https://raw.githubusercontent.com/Blunderbread/threejsmaze/master/maze/masterwheel/textures/geometric.jpg')"><header class="modalheader"><h2 id="title"></h2><div id="modalcontent"><p id="d1"></p><p id="d2"></p></div></header></div>
+		<div id="modal" class="modal" style="display: none; background-image: url('https://raw.githubusercontent.com/Blunderbread/threejsmaze/master/maze/masterwheel/textures/poly.png')"><header class="modalheader"><h2 id="title"></h2><div id="modalcontent"><p id="d1"></p><p id="d2"></p></div></header></div>
 		<div id="startButtonId"><button id="spin" class="button button1">Spin</button></div>
 		<div id="startButtonId"><button id="reset" class="button button2">Reset</button></div>
 		<style>
@@ -113,12 +113,13 @@
 			.modal {
 				border-radius: 5px;
 				background-size: cover;
+				background-position: center;
 				filter: hue-rotate(90deg);
 				position: absolute;
 				bottom: -200px;
-				left: 50px;
+				left: 25px;
 				padding: 0;
-				background-color: grey;
+				background-color: black;
 			}
 			.threejs {
 				position: absolute;
@@ -136,7 +137,7 @@
 				var modal = document.getElementById('modal');
 				
 				function modalout() {
-					var pos = 50;
+					var pos = 25;
 					var id = setInterval(frame, 5);
 					function frame() {
 						if (pos <= -200) {
@@ -144,7 +145,7 @@
 							modal.style.bottom = -200+'px';
 							modal.style.display = "none"
 						} else {
-							pos-=4; 
+							pos-=5; 
 							modal.style.bottom = pos + 'px';
 						}
 					}
@@ -155,11 +156,11 @@
 					var pos = -200;
 					var id = setInterval(frame, 5);
 					function frame() {
-						if (pos >= 50) {
-							modal.style.bottom = 50+'px';
+						if (pos >= 25) {
+							modal.style.bottom = 25+'px';
 							clearInterval(id);
 						} else {
-							pos+=4; 
+							pos+=5; 
 							modal.style.bottom = pos + 'px';
 						}
 					}
@@ -260,14 +261,14 @@
 						"Portal 2",
 						"Sporcle",
 						"Town of Salem",
-						"Transformice",
-						"Rocket League",
 						"Dark Souls 3",
 						"Team Fortress 2",
 						"Dark Souls 2",
 						"Distance",
 						"Overwatch",
 						"Super Mario 64 Online",
+//						"Transformice",
+//						"Rocket League",
 
 //						"Castle Crashers",
 //						"Risk of Rain",
@@ -343,7 +344,7 @@
 						["Madman's Rift","Finish your drink.",""],
 						["Bard's Rift","Play one song.","Cycle begins next spin."],
 						["Playwright's Rift","Choose a TV show and agree upon 3 rules","to drink. Select the episode randomly."],
-						["Jester's Rift","Watch 10 minutes of the meme playlist.","Starting point is random."],
+						["Jester's Rift","Watch 10 minutes of the meme playlist.","Starting on a random video."],
 						["Time Traveler's Rift","Reset the wheel and all hexes/curses/blessings.","Heart containers persist."],
 						["Rift of the Giggling Donkey","Watch a random videogamedunkey video.",""],
 						["Elder's Rift","Get to a certain level of an emulator game.",""],
@@ -353,7 +354,7 @@
 						["Curse of the Tavern","Play one song on an endless loop for the next cycle.","You cannot mute it. Curse ends when drink ends."],
 						["Curse of the Saloon","Can't end on a winning streak,","can't end on a loss."],
 						["Curse of the Hinterlands","This is a wild card for curses.",""],
-						["Curse of the House of Mirrors","Two drinks must be finished","by the end of the cycle."],
+						["Curse of the House of Mirrors","Two drinks must be finished by the end of the cycle.",""],
 						["Curse of the Battlefield","Drink if any player dies or loses a","round. Does not end when drink ends."],
 						["Curse of the Highlands","Satisfy 3 goals to avoid losing a","heart for each unsatisfied goal."],
 						["Curse of the Tundra","Half of the players don't drink","for 20 minutes. Round up."],
@@ -373,13 +374,13 @@
 						["Blessing of the Phoenix","A potion that either adds a","heart container or cancels death."],
 						["Blessing of the Apothecary","A potion that cures all curses now","or can be saved to cure a curse later."],
 						["Blessing of the Archmage","Cannot get hexed or cursed again in this cycle.",""],
-						["Blessing of the Elves","Cannot get hexed again","in this cycle."],
-						["Blessing of the Sorcerer","Cannot get cursed","again in this cycle."],
-						["Blessing of the Necromancer","You may play a game that","has already been played."],
+						["Blessing of the Elves","Cannot get hexed again in this cycle.",""],
+						["Blessing of the Sorcerer","Cannot get cursed again in this cycle.",""],
+						["Blessing of the Necromancer","You may play a game that has already been played.",""],
 						["Gambit of the Wise","Play a quiz from sporcle. 100% score prevents hexes and curses 1 time.",">50th percentile, receive a blessing.  Otherwise sustain a curse."],
 						["Gambit of the Fool","Play a 10 minute game for score, speed, or some","other goal. Win for a blessing, lose for a curse."],
-						["Gambit of the Deft","Finish a game or level in a certain amount of time","for a Blessing of the Peasant.  You get one try."],
-						["Gambit of the Healer","Win a round of something","to heal to max health."],
+						["Gambit of the Deft","Finish a game or level in a certain amount of time","for a Blessing of the Peasant."],
+						["Gambit of the Samaritan","Win a round of something to heal fully.",""],
 						["Gambit of the Omnipotent","Beat an emulator game for permanent","immunity from either curses or hexes."],
 					]
 					hardreset();
@@ -413,7 +414,7 @@
 					fps = new THREE.Clock();
 					fps.start();
 					imprefix = "url('https://raw.githubusercontent.com/Blunderbread/threejsmaze/master/maze/masterwheel/textures/"
-					imsuffix = [["blur.jpg')",341],["caution.jpg')",44],["dots.jpg')",43],["honeycomb.jpg')",35],["parallel.jpg')",194],["rug.jpg')",287],["geometric.jpg')",106],["space.jpg')",202],["drops.jpg')",84],["ribbons.jpg')",13],["tiles.jpg')",328]];
+					imsuffix = [["umbrellas.jpg')",137],["waves.jpg')",120],["square.jpg')",101],["skyward.jpg')",206],["poly.png')",339],["matrix.jpg')",102],["sunburst.jpg')",33],["caution.jpg')",44],["dots.jpg')",43],["honeycomb.jpg')",35],["parallel.jpg')",194],["space.jpg')",202],["drops.jpg')",84],["tiles.jpg')",328],["ascend.gif')",239],["test.gif')",340],["captivating.gif')",25],["rain.gif')",60],["spin2.gif')",30],["nodes.gif')",217],["triangles.gif')",256],["plane.gif')",253],["morty.gif')",290],["nightunnel.gif')",231],["cube.gif')",120],["water.gif')",189],["fire.gif')",11],["river.gif')",180],["spin3.gif')",16],["helix.gif')",21],["vase.gif')",95],["cursor.gif')",180],["planet.gif')",206],["floppy.gif')",226],["clouds.gif')",0],["grid.gif')",236],["grid2.gif')",198],["rays.gif')",342],["tunnel.gif')",354]];
 					hexrolled = false;
 					curserolled = false;
 					gambitrolled = false;
@@ -524,7 +525,7 @@
 				function sliceout(){
 					if (currlist[parseInt(lastseen)].slice(0,3)=="Hex") {hexrolled = true}
 					else if (currlist[parseInt(lastseen)].slice(0,8)=="Blessing") {blessingrolled = true}
-					else if ((currlist[parseInt(lastseen)].slice(currlist[parseInt(lastseen)].length-4)=="Rift")||(currlist[parseInt(lastseen)].slice(0,4)=="Rift")) {riftrolled = true}
+					else if ((currlist[parseInt(lastseen)].slice(currlist[parseInt(lastseen)].length-4)=="Rift") || (currlist[parseInt(lastseen)].slice(0,4)=="Rift")) {riftrolled = true}
 					else if (currlist[parseInt(lastseen)].slice(0,5)=="Curse") {curserolled = true}
 					else if (currlist[parseInt(lastseen)].slice(0,6)=="Gambit") {gambitrolled = true}
 					else {
@@ -625,7 +626,6 @@
 					for (i=0;i<1;i++) {currlist = currlist.concat(gambits)};
 					for (i=0;i<1;i++) {currlist = currlist.concat(blessings)};
 					for (i=0;i<3;i++) {currlist.push(hexes[1])};
-//					for (i=0;i<2;i++) {currlist = currlist.concat(curses)};
 					for (i=0;i<2;i++) {currlist = currlist.concat(curses)};
 					for (i=0;i<1;i++) {currlist = currlist.concat(hexes)};
 					more = Math.floor(Math.random()*5+5);
@@ -691,13 +691,13 @@
 					};
 					if (spinvel>microthr) {spinvel -= 0.0015*60*deltfr}
 					else if (spinvel>0) {
-						if (((hexrolled==false)||(currlist[parseInt(lastseen)].slice(0,3)!="Hex")) && ((curserolled==false)||(currlist[parseInt(lastseen)].slice(0,5)!="Curse")) && ((gambitrolled==false)||(currlist[parseInt(lastseen)].slice(0,6)!="Gambit")) && ((blessingrolled==false)||(currlist[parseInt(lastseen)].slice(0,8)!="Blessing")) && ((riftrolled==false)||(currlist[parseInt(lastseen)].slice(currlist[parseInt(lastseen)]-4)!="Rift")||(currlist[parseInt(lastseen)].slice(0,4)!="Rift"))) {
+						if (((hexrolled==false)||(currlist[parseInt(lastseen)].slice(0,3)!="Hex")) && ((curserolled==false)||(currlist[parseInt(lastseen)].slice(0,5)!="Curse")) && ((gambitrolled==false)||(currlist[parseInt(lastseen)].slice(0,6)!="Gambit")) && ((blessingrolled==false)||(currlist[parseInt(lastseen)].slice(0,8)!="Blessing")) && (!((riftrolled==true) && ((currlist[parseInt(lastseen)].slice(currlist[parseInt(lastseen)].length-4)=="Rift") || (currlist[parseInt(lastseen)].slice(0,4)=="Rift"))))) {
 							spinvel -= microvel*60*deltfr
 						}
 						else if (spinvel<0.001) {
-							masterwheel.rotation.x += (0.015*60*deltfr);
+							masterwheel.rotation.x += (0.015*16/masterwheel.children.length*60*deltfr);
 							for (i=0;i<scrollist.length;i++) {
-								scrollist[i].position.y -= (masterwheel.children.length/(2*Math.PI))*0.015*60*deltfr;
+								scrollist[i].position.y -= (masterwheel.children.length/(2*Math.PI))*0.015*16/masterwheel.children.length*60*deltfr;
 							};
 							if ((scrollist[scrollist.length-1].position.y<-5.5) || (scrollist[0].position.y>5.5)) {wordswap()};
 							scene.updateMatrixWorld();
