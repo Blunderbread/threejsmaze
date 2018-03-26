@@ -15,7 +15,7 @@
 		<div id="heart3" class="heart heart3"></div>
 		<div id="heart4" class="heart heart4"></div>
 		<div id="heart5" class="heart heart5"></div>
-		<div id="modal" class="modal" style="display: none; background-image: url('https://raw.githubusercontent.com/Blunderbread/threejsmaze/master/maze/masterwheel/textures/poly.png')"><header class="modalheader"><h2 id="title"></h2><div id="modalcontent"><p id="d1"></p><p id="d2"></p></div></header></div>
+		<div id="modal" class="modal" style="display: none; background-image: url('https://raw.githubusercontent.com/Blunderbread/threejsmaze/master/maze/masterwheel/textures/poly.png')"><svg><text x="15" y="35" font-family="Arial" font-weight="bold" font-size="30px" stroke="black" stroke-width="5px" paint-order="stroke" fill="white" id="title">Title</text><text x="15" y="75" font-family="Arial" font-weight="bold" font-size="15px" stroke="black" stroke-width="3px" paint-order="stroke" fill="white" id="d1">desc1</text><text x="15" y="100" font-family="Arial" font-weight="bold" font-size="15px" stroke="black" stroke-width="3px" paint-order="stroke" fill="white" id="d2">desc2</text></svg></div>
 		<div id="startButtonId"><button id="spin" class="button button1">Spin</button></div>
 		<div id="startButtonId"><button id="reset" class="button button2">Reset</button></div>
 		<style>
@@ -28,20 +28,6 @@
 			}
 			::selection { background: transparent;color:inherit; }
 			::-moz-selection { background: transparent;color:inherit; }
-			h2 {
-				font-family: "Segoe UI",Arial,sans-serif;
-				font-weight: 400;
-				margin: 10px 10px;
-				font-size: 30px;
-				color: white;
-			}
-			p {
-				font-family: Arial,sans-serif;
-				font-size: 15px;
-				margin: 5px 5px;
-				padding: 0;
-				color: white;
-			}
 			img {
 				z-index: 1;
 			}
@@ -103,15 +89,8 @@
 				bottom: 5%;
 				right: 5%;
 			}
-			.modalheader {
-				text-shadow: -1px 0 black, 0 1px black, 1px 0 black, 0 -1px black;
-			}
-			#modalcontent {
-				background: rgba(0, 0, 0, 0.25);
-				padding: 10px 10px;
-			}
 			.modal {
-				border-radius: 5px;
+				border-radius: 10px;
 				background-size: cover;
 				background-position: center;
 				filter: hue-rotate(90deg);
@@ -153,6 +132,17 @@
 				
 				function modalin() {
 					modal.style.display = "block";
+					svg = document.getElementsByTagName("svg")[0];
+					svgtitle = document.getElementById("title");
+					svgd1 = document.getElementById("d1");
+					svgd2 = document.getElementById("d2");
+					if (svgd1.innerHTML=="") {svgheight = 20+svgtitle.getBBox().height;}
+					else if (svgd2.innerHTML=="") {svgheight = 40+svgtitle.getBBox().height+svgd1.getBBox().height;}
+					else {svgheight = 45+svgtitle.getBBox().height+svgd1.getBBox().height+svgd2.getBBox().height;};
+					svgwidth = 30+Math.max(svgtitle.getBBox().width,svgd1.getBBox().width,svgd2.getBBox().width)
+					svg.setAttribute("width", svgwidth.toString() + "px");
+					svg.setAttribute("height", svgheight.toString() + "px");
+
 					var pos = -200;
 					var id = setInterval(frame, 5);
 					function frame() {
@@ -305,7 +295,7 @@
 						"Curse of the Tavern",
 						"Curse of the Saloon",
 						"Curse of the Hinterlands",
-						"Curse of the House of Mirrors",
+						"Curse of the Mirror",
 						"Curse of the Battlefield",
 						"Curse of the Highlands",
 						"Curse of the Tundra",
@@ -344,17 +334,17 @@
 						["Madman's Rift","Finish your drink.",""],
 						["Bard's Rift","Play one song.","Cycle begins next spin."],
 						["Playwright's Rift","Choose a TV show and agree upon 3 rules","to drink. Select the episode randomly."],
-						["Jester's Rift","Watch 10 minutes of the meme playlist.","Starting on a random video."],
+						["Jester's Rift","Watch 10 minutes of the meme playlist,","starting on a random video."],
 						["Time Traveler's Rift","Reset the wheel and all hexes/curses/blessings.","Heart containers persist."],
 						["Rift of the Giggling Donkey","Watch a random videogamedunkey video.",""],
 						["Elder's Rift","Get to a certain level of an emulator game.",""],
 						["Poor Man's Rift","Flash Games; the first game","of the day must be Doeo."],
 						["Interdimensional Rift","A wild card that grants any","game/curse/hex/blessing/rift/gambit."],
 						["Curse of the Lowlands","Current drink is now water.","Double if on water round."],
-						["Curse of the Tavern","Play one song on an endless loop for the next cycle.","You cannot mute it. Curse ends when drink ends."],
+						["Curse of the Tavern","Play one song on an endless loop for the next cycle.","This curse ends when your drink ends."],
 						["Curse of the Saloon","Can't end on a winning streak,","can't end on a loss."],
 						["Curse of the Hinterlands","This is a wild card for curses.",""],
-						["Curse of the House of Mirrors","Two drinks must be finished by the end of the cycle.",""],
+						["Curse of the Mirror","Two drinks must be finished by the end of the cycle.",""],
 						["Curse of the Battlefield","Drink if any player dies or loses a","round. Does not end when drink ends."],
 						["Curse of the Highlands","Satisfy 3 goals to avoid losing a","heart for each unsatisfied goal."],
 						["Curse of the Tundra","Half of the players don't drink","for 20 minutes. Round up."],
@@ -373,9 +363,9 @@
 						["Blessing of the Child","A wild card for use when bored.","Does not extend the cycle."],
 						["Blessing of the Phoenix","A potion that either adds a","heart container or cancels death."],
 						["Blessing of the Apothecary","A potion that cures all curses now","or can be saved to cure a curse later."],
-						["Blessing of the Archmage","Cannot get hexed or cursed again in this cycle.",""],
-						["Blessing of the Elves","Cannot get hexed again in this cycle.",""],
-						["Blessing of the Sorcerer","Cannot get cursed again in this cycle.",""],
+						["Blessing of the Archmage","Cannot get hexed or cursed for the next 30 minutes.",""],
+						["Blessing of the Elves","Cannot get hexed for 30 minutes.",""],
+						["Blessing of the Sorcerer","Cannot get cursed for 30 minutes.",""],
 						["Blessing of the Necromancer","You may play a game that has already been played.",""],
 						["Gambit of the Wise","Play a quiz from sporcle. 100% score prevents hexes and curses 1 time.",">50th percentile, receive a blessing.  Otherwise sustain a curse."],
 						["Gambit of the Fool","Play a 10 minute game for score, speed, or some","other goal. Win for a blessing, lose for a curse."],
@@ -540,15 +530,11 @@
 						if (descriptions[i][0]==currlist[parseInt(lastseen)]) {
 							document.getElementById("d1").innerHTML = descriptions[i][1];
 							document.getElementById("d2").innerHTML = descriptions[i][2];
-							document.getElementById('modalcontent').style.visibility = "visible";
-							document.getElementById('modalcontent').style.padding = 10;
 							break
 						}
 						else {
 							document.getElementById("d1").innerHTML = ""
 							document.getElementById("d2").innerHTML = ""
-							document.getElementById('modalcontent').style.visibility = "hidden";
-							document.getElementById('modalcontent').style.padding = 0;
 						};
 					};
 					selection = scene.getObjectByName(lastseen);
@@ -714,15 +700,11 @@
 								if (descriptions[i][0]==currlist[parseInt(lastseen)]) {
 									document.getElementById("d1").innerHTML = descriptions[i][1];
 									document.getElementById("d2").innerHTML = descriptions[i][2];
-									document.getElementById('modalcontent').style.visibility = "visible";
-									document.getElementById('modalcontent').style.padding = 10;
 									break
 								}
 								else {
 									document.getElementById("d1").innerHTML = "";
 									document.getElementById("d2").innerHTML = "";
-									document.getElementById('modalcontent').style.visibility = "hidden";
-									document.getElementById('modalcontent').style.padding = 0;
 								};
 							};
 							selection = scene.getObjectByName(lastseen);
