@@ -8,14 +8,14 @@
 		  body{margin: 0;overflow: hidden;}
 		</style>
 	</head>
-	<body bgcolor="#000000">
+	<body bgcolor="#000000" id="body">
 		<div id="heart0" class="heart heart0"></div>
 		<div id="heart1" class="heart heart1"></div>
 		<div id="heart2" class="heart heart2"></div>
 		<div id="heart3" class="heart heart3"></div>
 		<div id="heart4" class="heart heart4"></div>
 		<div id="heart5" class="heart heart5"></div>
-		<div id="modal" class="modal" style="display: none; background-image: url('https://raw.githubusercontent.com/Blunderbread/threejsmaze/master/maze/masterwheel/textures/poly.png')"><svg><text x="15" y="35" font-family="Arial" font-weight="bold" font-size="30px" stroke="black" stroke-width="5px" paint-order="stroke" fill="white" id="title">Title</text><text x="15" y="75" font-family="Arial" font-weight="bold" font-size="15px" stroke="black" stroke-width="3px" paint-order="stroke" fill="white" id="d1">desc1</text><text x="15" y="100" font-family="Arial" font-weight="bold" font-size="15px" stroke="black" stroke-width="3px" paint-order="stroke" fill="white" id="d2">desc2</text></svg></div>
+		<div id="modal" class="modal" style="display: none; background-image: url('https://raw.githubusercontent.com/Blunderbread/threejsmaze/master/maze/masterwheel/textures/poly.png')"><svg><text x="15" y="35" font-family="Helvetica" font-weight="bold" font-size="30px" stroke="black" stroke-width="5px" paint-order="stroke" fill="white" id="title">Title</text><text x="15" y="75" font-family="Helvetica" font-weight="bold" font-size="15px" stroke="black" stroke-width="3px" paint-order="stroke" fill="white" id="d1">desc1</text><text x="15" y="100" font-family="Helvetica" font-weight="bold" font-size="15px" stroke="black" stroke-width="3px" paint-order="stroke" fill="white" id="d2">desc2</text></svg></div>
 		<div id="startButtonId"><button id="spin" class="button button1">Spin</button></div>
 		<div id="startButtonId"><button id="reset" class="button button2">Reset</button></div>
 		<style>
@@ -172,6 +172,8 @@
 					if (spinning==false) {
 						spinning = true;
 						modalout();
+						arrow.visible = true;
+						document.getElementById("body").style.cursor = "none";
 						document.getElementById("spin").style.visibility = "hidden";
 						document.getElementById("reset").style.visibility = "hidden";
 						masterwheel.rotation.x = Math.random()*2*Math.PI;
@@ -257,6 +259,7 @@
 						"Distance",
 						"Overwatch",
 						"Super Mario 64 Online",
+						"Flash Games",
 //						"Transformice",
 //						"Rocket League",
 
@@ -332,7 +335,7 @@
 					]
 					descriptions = [
 						["Madman's Rift","Finish your drink.",""],
-						["Bard's Rift","Play one song.","Cycle begins next spin."],
+						["Bard's Rift","Play one song.",""],
 						["Playwright's Rift","Choose a TV show and agree upon 3 rules","to drink. Select the episode randomly."],
 						["Jester's Rift","Watch 10 minutes of the meme playlist,","starting on a random video."],
 						["Time Traveler's Rift","Reset the wheel and all hexes/curses/blessings.","Heart containers persist."],
@@ -355,7 +358,7 @@
 						["Hex of the Rooster","Satisfy 3 goals (or fewer if less than 3 heart","containers). Each failure results in health loss."],
 						["Hex of the Dodo","Purposely die 10 times or lose 3 rounds repeatedly. If you win or cannot","complete this in time, a random curse is applied and this hex persists."],
 						["Hex of the Falcon","Cycle interval decreases by 10","minutes to a minimum of 30 minutes."],
-						["Hex of the Goldfish","Cycle begins.","Play 1 round of 3 different games."],
+						["Hex of the Goldfish","The cycle begins now.","Play 1 round of 3 different games."],
 						["Hex of the Raven","You cannot use blessings in","your inventory this cycle."],
 						["Hex of the Kangaroo","You cannot backtrack. You cannot play","the same map and mode once completed."],
 						["Blessing of the Shaman","+1 heart container. Curses cured.",""],
@@ -373,10 +376,6 @@
 						["Gambit of the Samaritan","Win a round of something to heal fully.",""],
 						["Gambit of the Omnipotent","Beat an emulator game for permanent","immunity from either curses or hexes."],
 					]
-					hardreset();
-					health = 2;
-					maxhealth = 2;
-					adjhealth();
 					arshape = new THREE.Shape();
 					arshape.moveTo(0,0);
 					arshape.lineTo(0.75,0.75);
@@ -390,7 +389,12 @@
 					arrow = new THREE.Mesh(new THREE.ExtrudeGeometry(arshape,extset),new THREE.MeshLambertMaterial({color:0xFFFFFF}));
 					arrow.rotation.y -= Math.PI/2;
 					arrow.position.set(1,0,5);
+					arrow.visible = false;
 					scene.add(arrow);
+					hardreset();
+					health = 2;
+					maxhealth = 2;
+					adjhealth();
 					vec = new THREE.Vector3(0,0,-1);
 					sray = new THREE.Raycaster(arrow.position,vec,0,2);
 					ctest = [];
@@ -404,7 +408,7 @@
 					fps = new THREE.Clock();
 					fps.start();
 					imprefix = "url('https://raw.githubusercontent.com/Blunderbread/threejsmaze/master/maze/masterwheel/textures/"
-					imsuffix = [["umbrellas.jpg')",137],["waves.jpg')",120],["square.jpg')",101],["skyward.jpg')",206],["poly.png')",339],["matrix.jpg')",102],["sunburst.jpg')",33],["caution.jpg')",44],["dots.jpg')",43],["honeycomb.jpg')",35],["parallel.jpg')",194],["space.jpg')",202],["drops.jpg')",84],["tiles.jpg')",328],["ascend.gif')",239],["test.gif')",340],["captivating.gif')",25],["rain.gif')",60],["spin2.gif')",30],["nodes.gif')",217],["triangles.gif')",256],["plane.gif')",253],["morty.gif')",290],["nightunnel.gif')",231],["cube.gif')",120],["water.gif')",189],["fire.gif')",11],["river.gif')",180],["spin3.gif')",16],["helix.gif')",21],["vase.gif')",95],["cursor.gif')",180],["planet.gif')",206],["floppy.gif')",226],["clouds.gif')",0],["grid.gif')",236],["grid2.gif')",198],["rays.gif')",342],["tunnel.gif')",354]];
+					imsuffix = [["umbrellas.jpg')",137],["waves.jpg')",120],["square.jpg')",101],["skyward.jpg')",206],["poly.png')",339],["matrix.jpg')",102],["sunburst.jpg')",33],["caution.jpg')",44],["dots.jpg')",43],["honeycomb.jpg')",35],["parallel.jpg')",194],["space.jpg')",202],["drops.jpg')",84],["tiles.jpg')",328],["ascend.gif')",239],["test.gif')",340],["captivating.gif')",25],["rain.gif')",60],["spin2.gif')",30],["nodes.gif')",217],["triangles.gif')",256],["plane.gif')",253],["morty.gif')",290],["nightunnel.gif')",231],["cube.gif')",120],["water.gif')",189],["fire.gif')",11],["river.gif')",180],["spin3.gif')",16],["helix.gif')",21],["vase.gif')",95],["cursor.gif')",180],["planet.gif')",206],["floppy.gif')",226],["clouds.gif')",0],["grid.gif')",236],["grid2.gif')",198],["wired.gif')",60],["rays.gif')",342],["dolphin.gif')",233],["planet3.gif')",234],["planet2.gif')",246],["walk.gif')",244],["run.gif')",226],["wired2.gif')",118],["tunnel.gif')",354]];
 					hexrolled = false;
 					curserolled = false;
 					gambitrolled = false;
@@ -499,6 +503,8 @@
 						scrollist.unshift(word);
 					};
 					if (spinning==false) {
+						arrow.visible = false;
+						document.getElementById("body").style.cursor = "auto";
 						document.getElementById("spin").style.visibility = "visible";
 						document.getElementById("reset").style.visibility = "visible";
 					}	
@@ -642,7 +648,10 @@
 					gambitrolled = false;
 					blessingrolled = false;
 					riftrolled = false;
+					arrow.visible = false;
+					document.getElementById("body").style.cursor = "none";
 					document.getElementById("spin").style.visibility = "hidden";
+					document.getElementById("reset").style.visibility = "hidden";
 					listmaker();
 					resetwheel(aminewresetwheel);
 					wordsetup(aminewresetwords);
